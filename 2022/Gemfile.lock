@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    gosu (1.4.5)
+    ruby-progressbar (1.11.0)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  gosu
+  ruby-progressbar
+
+BUNDLED WITH
+   2.4.1
