@@ -4,3 +4,5 @@ source "https://rubygems.org"
 
 gem "ruby-progressbar"
 gem "gosu"
+
+gem "rspec", "~> 3.12"
