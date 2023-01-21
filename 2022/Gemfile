@@ -6,3 +6,5 @@ gem "ruby-progressbar"
 gem "gosu"
 
 gem "rspec", "~> 3.12"
+
+gem "rgl", "~> 0.5.10"
