@@ -59,6 +59,11 @@ class Day18 < AdventOfCode
       points
     end
     def inside_pocket_of(x0,y0,z0)
+      # Use 3D flood fill to find consecutive (non diagonal) points
+      # that are empty and classify them as INTERNAL (inside pocket
+      # of empty space) or EXTERNAL (pocket of empty space that
+      # touches the edge). Returns the pocket as an array of
+      # Points if it is INTERNAL
       #puts "CHECKING IF #{x0},#{y0},#{z0} is a pocket"
       if @data[z0][y0][x0] > 0
         return nil
@@ -77,12 +82,14 @@ class Day18 < AdventOfCode
       while !stack.empty?
         x,y,z = stack.shift
         if @data[z][y][x] == 0
+          # if we reach the edge, this is an EXTERNAL pocket
           state = EXTERNAL if edge?(x,y,z)
           @data[z][y][x] = UNKNOWN 
           pocket << AdventOfCode::Point.new(x,y,z)
           add_neighbors.call(x,y,z)
         end
       end
+      # We never reached an edge, this is an INTERNAL pocket
       state = INTERNAL if state == UNKNOWN
       pocket.each { |p| @data[p.z][p.y][p.x] |= state; @data[p.z][p.y][p.x] ^= UNKNOWN }
       if state == INTERNAL
@@ -171,6 +178,7 @@ class Day18 < AdventOfCode
     puts " z: #{@universe.min.z}<=>#{@universe.max.z} height: #{@universe.height}"
     exp_sides = exposed_sides
     pockets = @universe.find_pockets
+    puts " found #{pockets.size} internal air pockets"
     pockets.each do |pocket|
       pocket.each do |p|
         neighbors = @universe.neighbors_of(p.x,p.y,p.z)
