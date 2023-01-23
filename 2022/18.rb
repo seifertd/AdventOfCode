@@ -5,7 +5,6 @@ class Day18 < AdventOfCode
     BLOCK = 1
     INTERNAL = 2
     EXTERNAL = 4
-    UNKNOWN = 8
     attr_reader :data, :min, :max
     def initialize(debug = false)
       @debug = debug
@@ -68,7 +67,9 @@ class Day18 < AdventOfCode
       if @data[z0][y0][x0] > 0
         return nil
       end
-      state = edge?(x0,y0,z0) ? EXTERNAL : UNKNOWN
+      # if we aren't already at an edge, assume the
+      # pocket is INTERNAL, otherwise it is EXTERNAL
+      state = edge?(x0,y0,z0) ? EXTERNAL : INTERNAL
       @data[z0][y0][x0] |= state
       pocket = [AdventOfCode::Point.new(x0,y0,z0)]
       stack = []
@@ -84,14 +85,13 @@ class Day18 < AdventOfCode
         if @data[z][y][x] == 0
           # if we reach the edge, this is an EXTERNAL pocket
           state = EXTERNAL if edge?(x,y,z)
-          @data[z][y][x] = UNKNOWN 
+          @data[z][y][x] = state 
           pocket << AdventOfCode::Point.new(x,y,z)
           add_neighbors.call(x,y,z)
         end
       end
-      # We never reached an edge, this is an INTERNAL pocket
-      state = INTERNAL if state == UNKNOWN
-      pocket.each { |p| @data[p.z][p.y][p.x] |= state; @data[p.z][p.y][p.x] ^= UNKNOWN }
+      # Reset state of all members of the pocket
+      pocket.each { |p| @data[p.z][p.y][p.x] = state }
       if state == INTERNAL
         pocket
       else
