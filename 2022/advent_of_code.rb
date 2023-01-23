@@ -1,16 +1,20 @@
 class AdventOfCode
   Point = Struct.new(:x, :y, :z) do
-    def initialize(x = 0, y = 0, z = 0)
+    def initialize(x = 0, y = 0, z = nil)
       super(x, y, z)
     end
     def dist(other)
-      Math.sqrt(x * other.x + y * other.y + z * other.z)
+      Math.sqrt(x * other.x + y * other.y + (z || 0) * (other.z || 0))
     end
     def taxi_dist(other)
-      (x - other.x).abs + (y - other.y).abs + (z - other.z).abs
+      (x - other.x).abs + (y - other.y).abs + ((z||0) - (other.z || 0)).abs
     end
     def to_s
-      "(#{x},#{y})"
+      if !z.nil?
+        "(#{x},#{y},#{z})"
+      else
+        "(#{x},#{y})"
+      end
     end
     def inspect
       to_s
