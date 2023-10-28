@@ -30,9 +30,6 @@ class Day19 < AdventOfCode
       @geodes = geodes
     end
   end
-  def run
-    @part == 1 ? part1 : part2
-  end
   def read_blueprints
     @blueprints = []
     read_input do |line|
