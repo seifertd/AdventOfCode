@@ -1,5 +1,11 @@
 SAVE_ARGV = ARGV[0..-1]
 
+Gear = Struct.new(:part1, :part2) do
+  def ratio
+    part1 * part2
+  end
+end
+
 Schematic = Struct.new(:lines) do
   def initialize(lines = nil)
     self.lines = lines || []
@@ -49,6 +55,25 @@ Schematic = Struct.new(:lines) do
     parts.compact.uniq
   end
 
+  def all_gears
+    gears = []
+    (0...lines.size).each do |y|
+      (0...lines.first.size).each do |x|
+        if lines[y][x] == '*'
+          subparts = part_numbers_at(x,y)
+          if subparts.size == 2
+            p1= subparts.first
+            p2= subparts.last
+            p1_num = lines[p1.first][p1.last].join.to_i
+            p2_num = lines[p2.first][p2.last].join.to_i
+            gears << Gear.new(p1_num, p2_num)
+          end
+        end
+      end
+    end
+    gears
+  end
+
   def all_parts
     parts = []
     (0...lines.size).each do |y|
@@ -62,8 +87,8 @@ Schematic = Struct.new(:lines) do
     end
     parts
   end
-end
 
+end
 
 def parse_schematic
   schematic = Schematic.new
@@ -73,6 +98,11 @@ def parse_schematic
     schematic.lines << line.split(//)
   end
   schematic
+end
+
+def part2
+  s = parse_schematic
+  s.all_gears.map(&:ratio).sum
 end
 
 def part1
@@ -86,4 +116,4 @@ def part1
 end
 
 puts "Part 1: #{part1}"
-#puts "Part 2: #{part2}"
+puts "Part 2: #{part2}"
