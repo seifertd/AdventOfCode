@@ -33,15 +33,15 @@ def part1(cards)
 end
 
 def part2(cards)
+  sum = 0
   cards.each.with_index do |card, cidx|
     num_winners = card.have.intersection(card.winners).size
     num_winners.times do |offset|
       cards[cidx + offset + 1].copies += card.copies
     end
-  end
-  cards.inject(0) do |sum, card|
     sum += card.copies
   end
+  sum
 end
 
 cards = parse_input
