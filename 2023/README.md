@@ -13,7 +13,7 @@ ruby foo.rb input.txt
 
 Both parts will be run
 
-Notes, Bluders and Victories
+Notes, Blunders and Victories
 --------------------------------
 
 * Day 3: Took a while because I forgot to strip newlines off the input and thus counted as a part number
