@@ -1,24 +1,28 @@
 Race = Struct.new(:max_time, :max_distance) do
   def ways_to_win
+    # See readme, max distance happens when charge time is 1/2 the race max time
     opt_charge_time = self.max_time / 2
-    times = if self.max_time.odd?
-              2
-            else
-              1
-            end
+
+    # If max race time is odd, we will win at 0.5T - 0.5 and 0.5T + 0.5, otherwise
+    # we will win at 0.5T
+    times_won = self.max_time.odd? ? 2 : 1
+
+    # See readme, formula to calculate dist travelled given wait time
     dist = lambda { |t| t * self.max_time - t**2 }
     time = opt_charge_time
     while true
       newtime = time - 1
       newdist = dist.call(newtime)
       if newdist > self.max_distance
-        times += 2
+        # we will win for newtime and since the dist formula is
+        # quadratic and symmetric, we will win for time + 1 as well
+        times_won += 2
       else
         break
       end
       time = newtime
     end
-    times
+    times_won
   end
 end
 
