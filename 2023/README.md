@@ -22,3 +22,4 @@ Notes, Blunders and Victories
   the mapping range.  I had handled the other cases: where the mapping range covers the input range,
   where they overlap and where they don't intersect. After writing things down on paper, was able to
   finally get an implementation that worked.
+* Days 6 and 7: kind of boring ...
