@@ -31,3 +31,4 @@ Notes, Blunders and Victories
   I repurposed part1 to work with either a end node or ends with Z, found how many steps each of the
   5 starting nodes would take to get to a node that ended in Z, then found the lcm of those 5 largish
   numbers. Ruby has a convenient Integer.lcm(other) method for this.
+* Day 9: easy
