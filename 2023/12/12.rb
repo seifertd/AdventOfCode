@@ -50,45 +50,8 @@ Springs = Struct.new(:patterns, :fills) do
       poss << '#'
       spots = get_spots(poss)
       if !prune_poss(pattern, fills, state, poss, spots)
-        # look ahead and consume additional pattern chars if we can
-        pp_p_idx = p_idx
-        prune = false
-        extras = []
-=begin
-        if poss.last == '#' && spots.last < fills[spots.size - 1]
-          spot_size = spots.last
-          c_idx = p_idx + 1
-          while c_idx < pattern.length - 1 && pattern[c_idx] != '.' && spot_size < fills[spots.size - 1]
-            extras << '#'
-            spot_size += 1
-            c_idx += 1
-          end
-          if c_idx > p_idx
-            if c_idx < pattern.size
-              if pattern[c_idx] == '#'
-                extras = []
-                prune = true
-              else
-                extras << '.'
-                c_idx += 1
-              end
-            end
-            if !prune
-              p_idx = c_idx
-              poss.concat(extras)
-            end
-          end
-        end
-=end
-        if !prune
-          count_dfs(pattern, fills, state, p_idx, poss)
-          if extras.size > 0
-            extras.size.times do
-              poss.pop
-              p_idx -= 1
-            end
-          end
-        end
+        # look ahead if possible and consume more
+        count_dfs(pattern, fills, state, p_idx, poss)
       end
       poss.pop
       poss << '.'
@@ -173,9 +136,7 @@ end
 def part1(springs)
   springs.patterns.map.with_index do |pattern, i|
     #springs.count_fills(pattern, springs.fills[i])
-    count = springs.count(pattern, springs.fills[i])
-    puts "PATTERN #{i}: COUNT: #{count}"
-    count
+    springs.count(pattern, springs.fills[i])
   end.sum
 end
 
