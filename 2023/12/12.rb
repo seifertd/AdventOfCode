@@ -1,5 +1,70 @@
 State = Struct.new(:count)
 Springs = Struct.new(:patterns, :fills) do
+
+  CACHE = {}
+
+  def count2(pattern, fills)
+
+    #puts "COUNT2: #{pattern.join} FILLS: #{fills.join(",")} CACHE: #{CACHE.inspect}"
+    #puts "COUNT2: #{pattern.join} FILLS: #{fills.join(",")}" 
+
+    if pattern.empty? && !fills.empty?
+      #puts "   -> NO MATCH"
+      return 0
+    elsif pattern.empty? && fills.empty?
+      #puts "   -> MATCH"
+      return 1
+    end
+
+    key = "#{pattern.join}-#{fills.join(',')}"
+    val = CACHE[key]
+    if !val.nil?
+      return val
+    end
+
+    val = nil
+    if pattern[0] == '.'
+      new_pattern = pattern[1..-1]
+      val = count2(new_pattern, fills)
+    elsif pattern[0] == '?'
+      new_pattern = pattern.dup
+      new_pattern[0] = '#'
+      c1 = count2(new_pattern, fills)
+      new_pattern[0] = '.'
+      c2 = count2(new_pattern, fills)
+      val = c1 + c2
+    else
+      if fills.size == 0
+        #puts "   -> FOUND # CHAR WITH NO FILL, NO MATCH"
+        val = 0
+      else
+        #puts "      = GOT A # CHAR IN #{pattern.join}"
+        idx = 1
+        group_size = 1
+        while idx < pattern.length && pattern[idx] != '.' && group_size < fills[0]
+          group_size += 1
+          idx += 1
+        end
+        #puts "      = AFTER LOOK AHEAD, IDX: #{idx} GROUP_SIZE: #{group_size}"
+        if group_size == fills[0]
+          if group_size == pattern.length || pattern[group_size] != '#'
+            new_pattern = pattern.dup
+            (group_size + 1).times { new_pattern.shift }
+            val = count2(new_pattern, fills[1..-1])
+          else
+            #puts "   -> Could not match fill of size #{fills[0]} with #{pattern.join}"
+            val = 0
+          end
+        else
+          #puts "  -> Ran out of # chars, no match for fill of size #{fills[0]} with #{pattern.join}"
+          val = 0
+        end
+      end
+    end
+    CACHE[key] = val
+    val
+  end
+
   def count(pattern, fills)
     #puts "COUNTING #{pattern.inspect} FILLS: #{fills.inspect}"
     state = State.new(0)
@@ -73,15 +138,20 @@ Springs = Struct.new(:patterns, :fills) do
   end
 
   def prune_poss(pattern, fills, state, poss, spots)
+    return true if spots.size > fills.size
+
     # look ahead in pattern to see if last spot is compatible
     if poss.last == '#'
       if spots.last == fills[spots.size - 1]
         # next char in pattern has to be a '?' or '.', otherwise prune
         return true if pattern[poss.size] == '#'
+      elsif spots.last < fills[spots.size - 1]
+        # next char in pattern has to be a '?' or '#', otherwise prune
+        return true if pattern[poss.size] == '.'
       end
     end
 
-    spots.size > fills.size || spots.each.with_index.any? do |s, idx|
+    spots.each.with_index.any? do |s, idx|
       s > fills[idx]
     end
   end
@@ -136,17 +206,21 @@ end
 def part1(springs)
   springs.patterns.map.with_index do |pattern, i|
     #springs.count_fills(pattern, springs.fills[i])
-    springs.count(pattern, springs.fills[i])
+    #count1 = springs.count(pattern, springs.fills[i])
+    count = springs.count2(pattern, springs.fills[i])
+    #puts "PATTERN #{i}: COUNT1: #{count1} COUNT2: #{count}"
+    CACHE.clear
+    count
   end.sum
 end
 
 def part2(springs)
   springs.patterns.map.with_index do |pattern, i|
-    next if i < springs.patterns.size - 1
     p = pattern + (['?'] + pattern) * 4
     f = springs.fills[i] * 5
-    count = springs.count(p, f)
-    puts "PATTERN #{i}: COUNT: #{count}"
+    count = springs.count2(p, f)
+    #puts "PATTERN #{i}: COUNT: #{count}"
+    CACHE.clear
     count
   end.sum
 end

@@ -34,3 +34,7 @@ Notes, Blunders and Victories
 * Day 9: easy
 * Day 10: Includes an ascii art visualization of the map and what squares are inside and outside
   of the cycle.
+* Day 12: Could not solve Day 2 without cheating.  Got Day 2 solution that worked for the sample input
+  but took 40 minutes to run. Real input was not going to work on this.
+  Thanks https://old.reddit.com/user/damaltor1 for the help and tips
+  here: https://old.reddit.com/r/adventofcode/comments/18ghux0/2023\_day\_12\_no\_idea\_how\_to\_start\_with\_this\_puzzle/
