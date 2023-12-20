@@ -14,12 +14,13 @@ Map = Struct.new(:rows, :cols, :data) do
   end
 
   def reflection
-     vertical_reflection || horizontal_reflection || raise("Could not find any reflections")
+     vertical_reflection || horizontal_reflection || -1
   end
 
-  def vertical_reflection
+  def vertical_reflection(skip = nil)
     found = false
     (0...self.cols-1).each do |c1|
+      next if c1 == skip
       found = (0...self.rows).to_a.all? do |r|
         self.data[r][c1] == self.data[r][c1+1]
       end
@@ -45,9 +46,10 @@ Map = Struct.new(:rows, :cols, :data) do
     end
     nil
   end
-  def horizontal_reflection
+  def horizontal_reflection(skip = nil)
     found = false
     (0...self.rows-1).each do |r1|
+      next if r1 == skip
       found = (0...self.cols).to_a.all? do |c|
         self.data[r1][c] == self.data[r1+1][c]
       end
@@ -101,5 +103,35 @@ def part1(maps)
   end.sum
 end
 
+def part2(maps)
+  maps.map.with_index do |m, m_idx|
+    ans = nil
+    vr = m.vertical_reflection
+    hr = m.horizontal_reflection
+    m.rows.times do |y|
+      m.cols.times do |x|
+        m.data[y][x] = m.data[y][x] == '#' ? '.' : '#'
+        vrn = m.vertical_reflection(vr && (vr-1))
+        hrn = m.horizontal_reflection(hr && (hr/100 - 1))
+        if vrn && (vr.nil? || vrn != vr)
+          ans = vrn
+        elsif hrn && (hr.nil? || hrn != hr)
+          ans = hrn
+        end
+        m.data[y][x] = m.data[y][x] == '#' ? '.' : '#'
+        break if !ans.nil?
+      end
+      break if !ans.nil?
+    end
+    if ans.nil?
+      puts "NO SOLUTION FOR MAP #{m_idx + 1} Original vr=#{vr.inspect} hr=#{hr.inspect}:"
+      puts m.data.map(&:join).join("\n")
+      raise "No solution found for map #{m_idx + 1}"
+    end
+    ans
+  end.sum
+end
+
 maps = parse_maps
 puts "Part 1: #{part1(maps)}"
+puts "Part 2: #{part2(maps)}"

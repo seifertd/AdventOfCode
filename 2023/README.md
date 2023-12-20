@@ -38,3 +38,8 @@ Notes, Blunders and Victories
   but took 40 minutes to run. Real input was not going to work on this.
   Thanks https://old.reddit.com/user/damaltor1 for the help and tips
   here: https://old.reddit.com/r/adventofcode/comments/18ghux0/2023\_day\_12\_no\_idea\_how\_to\_start\_with\_this\_puzzle/
+* Day 13: Seemed trivial, but took a long time to figure out that 1) The solutions after applying a smudge really
+  had to be different from the pre-smudge solutions and 2) Many of the maps have more than one solution and there
+  is an unstated assumption that in part 1, you use the first available solution, but in part 2, you have to
+  skip that one and try to find the next ... who knows, there could be N solutions in a map.  This problem
+  sucked.
