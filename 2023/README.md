@@ -46,3 +46,5 @@ Notes, Blunders and Victories
 * Day 14: Mostly easy. Day 2 solution hinges on knowing you can never brute force 1 billion iterations of the
   platform tilting, so there has to be a cycle. Find it and the offset it starts at, then mod the 1 billion minus
   the offset by the cycle length add the offset back and replay that many tilts to get the answer.
+* Day 16: Got stuck shortly on part 2 because part 1 was mutating the parsed cave data. Had to make sure 
+  I copied the cave after parsing it for use as input inot part 1 and part 2.
