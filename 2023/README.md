@@ -48,3 +48,4 @@ Notes, Blunders and Victories
   the offset by the cycle length add the offset back and replay that many tilts to get the answer.
 * Day 16: Got stuck shortly on part 2 because part 1 was mutating the parsed cave data. Had to make sure 
   I copied the cave after parsing it for use as input inot part 1 and part 2.
+* Day 18: Part 1 can be simulated. Part 2 can't be using the normal x,y grid. Sparse grids?
