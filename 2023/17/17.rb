@@ -2,18 +2,23 @@ require_relative '../common/point'
 require_relative '../common/astar'
 
 class PointWithTrail < Point
-  attr_reader :trail
+  attr_accessor :trail
   def initialize(x, y, trail = nil)
     super(x, y)
     @trail = trail || []
   end
   def move(dir)
     np = super(dir)
+    _move(dir, np)
+  end
+
+  def _move(dir, np)
     np_with_trail = PointWithTrail.new(np.x, np.y, self.trail.dup)
     np_with_trail.trail << dir
     np_with_trail.trail.shift if np_with_trail.trail.size > 3
     np_with_trail
   end
+
   def eql?(o)
     self.x == o.x && self.y == o.y && self.trail == o.trail
   end
@@ -111,6 +116,58 @@ CityBlock = Struct.new(:rows, :cols, :grid) do
   end
 end
 
+class PointWithTrail2 < PointWithTrail
+  def _move(dir, np)
+    np_with_trail = PointWithTrail2.new(np.x, np.y, self.trail.dup)
+    if self.trail.nil? || self.trail.empty? || dir != self.trail.first
+      np_with_trail.trail = [dir, 1]
+    else
+      np_with_trail.trail[1] += 1
+    end
+    np_with_trail
+  end
+
+  def to_s
+    "(#{x},#{y}):#{trail.inspect}"
+  end
+end
+
+class CityBlock2 < CityBlock
+  def initialize(rows, cols, grid)
+    self.rows = rows
+    self.cols = cols
+    self.grid = grid
+  end
+  def neighbors(to, path)
+    new_dirs = nil
+    #puts "FINDING NEIGHBORS OF #{to}"
+    if to.y == self.rows - 1 && to.x == self.cols - 2 && (to.trail.first != :e || to.trail.last < 3)
+      new_dirs = []
+    elsif to.y == self.rows - 2 && to.x == self.cols - 1 && (to.trail.first != :s || to.trail.last < 3)
+      new_dirs = []
+    elsif to.trail.nil? || to.trail.empty? || to.trail.last == 0
+      new_dirs = [:n, :e, :s, :w]
+    elsif to.trail.last < 4
+      new_dirs = [to.trail.first]
+    else
+      new_dirs = if [:e, :w].include?(to.trail.first)
+                   [:n, :s]
+                 else
+                   [:e, :w]
+                 end
+      if to.trail.last < 10
+        new_dirs << to.trail.first
+      end
+    end
+    #puts "NEIGHBORS ARE IN DIRS #{new_dirs.inspect}"
+    new_dirs.map{|d| to.move(d)}.reject do |p|
+      rej = p.x < 0 || p.y < 0 || p.x >= self.cols || p.y >= self.rows
+      #puts "REJECTING #{p}" if rej
+      rej
+    end
+  end
+end
+
 def parse_city_block
   cb = CityBlock.new
   ARGF.each_line do |line|
@@ -120,19 +177,36 @@ def parse_city_block
 end
 
 def part1(cb)
+  debug = ENV['DEBUG'].include?("part1")
   start = PointWithTrail.new(0,0)
   finish = PointWithTrail.new(cb.cols-1, cb.rows-1)
-  #puts "Start: #{start} Finish: #{finish}"
-  #puts cb.inspect
+  puts "Start: #{start} Finish: #{finish}" if debug
+  puts cb.inspect if debug
   best_path = AStar.optimal_path(cb, start, finish)
-  #puts "Best Path:"
-  #puts best_path.inspect
-  #puts cb.draw_with_path(best_path)
+  puts "Best Path:" if debug
+  puts best_path.inspect if debug
+  puts cb.draw_with_path(best_path) if debug
   hl = cb.heat_loss(best_path)
-  #puts "Heat Loss: #{hl}"
+  puts "Heat Loss: #{hl}" if debug
   hl
 end
 
+def part2(cb)
+  debug = ENV['DEBUG'].include?("part2")
+  cb = CityBlock2.new(cb.rows, cb.cols, cb.grid)
+  start = PointWithTrail2.new(0,0)
+  finish = PointWithTrail2.new(cb.cols-1, cb.rows-1)
+  puts "Start: #{start} Finish: #{finish}" if debug
+  puts cb.inspect if debug
+  best_path = AStar.optimal_path(cb, start, finish)
+  puts "Best Path:" if debug
+  puts best_path.inspect if debug
+  puts cb.draw_with_path(best_path) if debug
+  hl = cb.heat_loss(best_path)
+  puts "Heat Loss: #{hl}" if debug
+  hl
+end
 cb = parse_city_block
 
 puts "Part 1: #{part1(cb)}"
+puts "Part 2: #{part2(cb)}"

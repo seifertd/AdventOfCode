@@ -39,10 +39,12 @@ module AStar
           end
         end
       end
-      if steps % 1000 == 0
-        puts "ASTAR: steps: #{steps} queue size: #{queue.size}, best path terminus: #{current}"
+      if ENV['DEBUG'].include?("astar")
+        if steps % 1000 == 0
+          puts "ASTAR: steps: #{steps} queue size: #{queue.size}, best path terminus: #{current}"
+        end
+        steps += 1
       end
-      steps += 1
     end
     if found
       path_from[finish]
