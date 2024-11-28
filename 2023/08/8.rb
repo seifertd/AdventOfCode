@@ -1,4 +1,4 @@
-require_relative '../common/cycle.rb'
+require_relative '../../common/cycle.rb'
 
 Map = Struct.new(:nodes, :instructions) do
   def reset

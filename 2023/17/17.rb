@@ -1,5 +1,5 @@
-require_relative '../common/point'
-require_relative '../common/astar'
+require_relative '../../common/point'
+require_relative '../../common/astar'
 
 class PointWithTrail < Point
   attr_accessor :trail
