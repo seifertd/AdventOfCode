@@ -11,6 +11,9 @@ class Solution
       yield(line)
     end
   end
+  def debug(msg)
+    print(msg) if ENV['DEBUG']
+  end
 end
 
 if __FILE__ == $0
