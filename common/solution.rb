@@ -5,7 +5,7 @@ class Solution
   def part2
     raise "part2 solution not implemented"
   end
-  def read_input
+  def input
     ARGF.each_line do |line|
       line.chomp!
       yield(line)
