@@ -1,8 +1,7 @@
 class Solution
   def part1
     safe = 0
-    ARGF.each_line do |line|
-      line.chomp!
+    read_input do |line|
       levels = line.split(/\s+/).map(&:to_i)
       if levels_are_safe(levels)
         safe += 1
@@ -28,8 +27,7 @@ class Solution
   end
   def part2
     safe = 0
-    ARGF.each_line do |line|
-      line.chomp!
+    read_input do |line|
       levels = line.split(/\s+/).map(&:to_i)
       if levels_are_safe(levels)
         safe += 1
@@ -46,6 +44,12 @@ class Solution
       puts if ENV['DEBUG']
     end
     safe
+  end
+  def read_input
+    ARGF.each_line do |line|
+      line.chomp!
+      yield line
+    end
   end
 end
 
