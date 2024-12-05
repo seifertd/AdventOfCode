@@ -17,16 +17,17 @@ class Solution
 end
 
 if __FILE__ == $0
-  solution = Solution.new
   err = 0
   if ARGV.length == 0
     err = 1
     puts "ERROR: no arg provided"
   elsif ARGV[0] == 'part1'
     ARGV.shift
+    solution = Solution.new
     puts "Part 1: #{solution.part1}"
   elsif ARGV[0] == 'part2'
     ARGV.shift
+    solution = Solution.new
     puts "Part 2: #{solution.part2}"
   else
     puts "ERROR: Unknown arguments: #{ARGV.inspect}"
