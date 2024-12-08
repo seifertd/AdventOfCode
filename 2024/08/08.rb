@@ -49,7 +49,7 @@ class Solution
         negdiff = diff.neg
         np1 = Point.new(p2.x, p2.y)
         loop do
-          np1 = np1.add(diff.neg)
+          np1 = np1.add(negdiff)
           break if !(np1.x >= 0 && np1.y >= 0 && np1.x < grid[0].size && np1.y < grid.size)
           antinodes << np1
         end
