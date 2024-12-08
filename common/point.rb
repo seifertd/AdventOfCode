@@ -8,6 +8,15 @@ Point = Struct.new(:x, :y, :z) do
   def taxi_dist(other)
     (x - other.x).abs + (y - other.y).abs + ((z||0) - (other.z || 0)).abs
   end
+  def dist_comps(other)
+    Point.new(other.x - x, other.y - y, ((other.z||0) - (z||0)))
+  end
+  def add(other)
+    Point.new(other.x + x, other.y + y, ((other.z||0) + (z||0)))
+  end
+  def neg
+    Point.new(-x, -y, -(z||0))
+  end
   def direction_from(other)
     dx = self.x - other.x
     dy = self.y - other.y
