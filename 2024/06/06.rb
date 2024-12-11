@@ -10,7 +10,7 @@ class Solution
     seen = Set.new([Point.new(x,y,d)])
     loop do
       y += DY[d]; x += DX[d]
-      return seen if !(0 <= x && x < cols && 0 <= y && y < cols)
+      return seen if !(0 <= x && x < cols && 0 <= y && y < rows)
       if grid[y][x] == '#' || (x == ox && y == oy)
         y -= DY[d]; x -= DX[d]
         d = (d + 1) % 4
@@ -39,21 +39,48 @@ class Solution
   def part1
     grid, gx, gy = parse_grid
     path = check(grid, gx, gy)
+    # count unique locations we visited, regardless of direction
     path.map{|p| Point.new(p.x, p.y)}.uniq.count
   end
   def part2
-    blocks  = 0
+    blocks  = Set.new
     grid, gx, gy = parse_grid
-    grid.size.times do |oy|
-      grid[0].size.times do |ox|
-        if grid[oy][ox] == '.'
-          if !check(grid, gx, gy, ox, oy)
-            blocks  += 1
+    path = check(grid, gx, gy)
+    path.each do |p|
+      p = Point.new(p.x + DX[p.z], p.y + DY[p.z])
+      if (p.x >= 0 && p.y >= 0 && p.y < grid.size && p.x < grid[0].size ) && grid[p.y][p.x] == '.' && !blocks.include?(p)
+        newpath = nil
+        if !(newpath = check(grid, gx, gy, p.x, p.y))
+          blocks << Point.new(p.x, p.y)
+          if ENV['DEBUG']
+            puts "LOOP:"
+            draw_grid(grid, path, p)
           end
         end
       end
     end
-    blocks
+    blocks.size
+  end
+  def draw_grid(grid, path = nil, blk = nil)
+    grid = Marshal.load(Marshal.dump(grid))
+    if !path.nil?
+      path.each do |p|
+        grid[p.y][p.x] = case p.z
+          when 0
+            '^'
+          when 1
+            '>'
+          when 2
+            'v'
+          when 3
+            '<'
+          end
+      end
+    end
+    if !blk.nil?
+      grid[blk.y][blk.x] = '@'
+    end
+    grid.each { |row| puts row.join}
   end
   def input
     ARGF.each_line do |line|
