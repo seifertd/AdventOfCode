@@ -22,10 +22,9 @@ class Solution
   end
   def part1
     stones = ARGF.read.split(" ").map(&:to_i)
-    #7.times do |blk|
-    25.times do |blk|
+    (ENV['ITERS'] || 25).to_i.times do |blk|
       blink(stones)
-      #debug "BLINK: #{blk}: #{stones.join(' ')}\n"
+      debug "BLINK: #{blk + 1}: number stones: #{stones.size}\n"
     end
     stones.size
   end
@@ -51,9 +50,9 @@ class Solution
     ARGF.read.split(" ").map(&:to_i).each do |num|
       stones[num] = 1
     end
-    75.times do |blk|
+    (ENV['ITERS'] || 75).to_i.times do |blk|
       stones = blink2(stones)
-      debug "BLINK: #{blk}: #{stones.values.sum}\n"
+      debug "BLINK: #{blk + 1}: unique stones: #{stones.size} total stones: #{stones.values.sum}\n"
     end
     stones.values.sum
   end
