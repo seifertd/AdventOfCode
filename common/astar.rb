@@ -1,5 +1,5 @@
 module AStar
-  # grid must implement #neighbors(point, path), #g_score(p1, p2) and #f_score(p1, p2, goal)
+  # grid must implement #neighbors(point, path), #g_score(p1, p2) and #h_score(p1, p2, goal)
   def self.optimal_path(grid, start, finish)
     queue = [start]
     path_from = {}
