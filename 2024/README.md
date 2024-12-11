@@ -10,6 +10,12 @@ ruby 01.rb part2 input.txt
 
 ```
 
+Some solutions support detailed DEBUG output, but be careful, this
+can spew tons of output if run against the full input
+```
+DEBUG=true ruby 06.rb part1 sample.txt
+```
+
 
 * Day 1
   * Pretty stock standard sort and zip solution for part 1
