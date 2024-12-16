@@ -14,6 +14,9 @@ Point = Struct.new(:x, :y, :z) do
   def add(other)
     Point.new(other.x + x, other.y + y, ((other.z||0) + (z||0)))
   end
+  def mag2
+    x * x + y * y + ((z||0) * (z||0))
+  end
   def neg
     Point.new(-x, -y, -(z||0))
   end
@@ -67,22 +70,25 @@ Point = Struct.new(:x, :y, :z) do
     end
   end
   def move(dir)
-    if dir == :n
+    case dir
+    when :n, :^
       Point.new(self.x, self.y - 1)
-    elsif dir == :ne
+    when :ne
       Point.new(self.x + 1, self.y - 1)
-    elsif dir == :e
+    when :e, :>
       Point.new(self.x + 1, self.y)
-    elsif dir == :se
+    when  :se
       Point.new(self.x + 1, self.y + 1)
-    elsif dir == :s
+    when :s, :v
       Point.new(self.x, self.y + 1)
-    elsif dir == :sw
+    when :sw
       Point.new(self.x - 1, self.y + 1)
-    elsif dir == :w
+    when :w, :<
       Point.new(self.x - 1, self.y)
-    elsif dir == :nw
+    when :nw
       Point.new(self.x - 1, self.y - 1)
+    else
+      raise "Unknown dir for Point#move: #{dir.inspect}"
     end
   end
   def to_s
