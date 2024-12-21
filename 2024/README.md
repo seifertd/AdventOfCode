@@ -97,5 +97,24 @@ DEBUG=true ruby 06.rb part1 sample.txt
     able to utilize my AStar module from last year.
   * Part 2 was also just A*, but I had to add the ability for it to track all equivalent
     paths leading to the goal. But now I have this in my toolbox.
-    
-
+* Day 17
+  * Part 1 easy, part 2 not possible without me cheating
+* Day 18
+  * More astar utilization for both parts
+* Day 19
+  * A change from A*. Key to solving this one was not trying to generate the actual towel
+    arrangements, but rather just count possible ones. I took several blind alleys on this
+    one before finding the pretty simple solution that involves memoizing how many good towel
+    arrangements you can get from your list of patterns for a specific design, and making sure
+    you memoize as you match. The real input results in a ridiculous number of possible
+    arrangements for each design.
+* Day 20
+  * Part 1: Back to A*. My first try at part1 involved running A* many times, which worked for the 
+    sample input, but failed miserably on the real input. I think it would have taken several
+    hours for my first try to grind through running A* for each possible cheat. After scratching
+    my head a bit, I looked at the actual input file and noted there is only 1 really windy
+    corridor from start to finish and A* probably is not needed for it. So I optimized to
+    generate the non cheat path, determine the distance to the finish point at every step,
+    then try cheats at every step and use the memoized distances to quickly calulate the
+    new distance for the cheated path.
+  * Part 2: Gah, have to expand part1 a bit, but should be easy (he says at 2am)

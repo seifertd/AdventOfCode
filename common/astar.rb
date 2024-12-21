@@ -1,7 +1,7 @@
 module AStar
   DEBUG = ENV['DEBUG'] && ENV['DEBUG'].include?("astar")
   # grid must implement #neighbors(point, path), #g_score(p1, p2) and #h_score(p1, p2, goal)
-  def self.optimal_path(grid, start, finish, all_paths = false)
+  def self.optimal_path(grid, start, finish, options = {all_paths: false, term_proc: nil})
     queue = [start]
     path_from = {}
     path_from[start] = [start]
@@ -14,12 +14,15 @@ module AStar
     while queue.size > 0
       #current = queue.min{|a,b| priority[a] <=> priority[b]}
       current = queue.shift
-      if current.x == finish.x && current.y == finish.y
+      if current.x == finish.x && current.y == finish.y 
         finish = current
         found = true
         break
       end
-      neighbors = grid.neighbors(current, path_from[current].last(4))
+      if options[:term_proc] && options[:term_proc].call(current, path_from[current])
+        return path_from[current]
+      end
+      neighbors = grid.neighbors(current, path_from[current])
       for n in neighbors
         raise "NEIGHBER IS SAME AS CURRENT" if current.eql?(n)
         new_cost = cost_to[current] + grid.g_score(current, n)
@@ -52,7 +55,7 @@ module AStar
       end
     end
     if found
-      if !all_paths
+      if !options[:all_paths]
         path_from[finish]
       else
         paths = [[finish]]
