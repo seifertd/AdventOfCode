@@ -118,3 +118,4 @@ DEBUG=true ruby 06.rb part1 sample.txt
     then try cheats at every step and use the memoized distances to quickly calulate the
     new distance for the cheated path.
   * Part 2: Gah, have to expand part1 a bit, but should be easy (he says at 2am)
+    It was easy. Day 1 code could be cleaned up a bit to use technique in part2.

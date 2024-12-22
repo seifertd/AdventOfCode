@@ -8,6 +8,20 @@ Point = Struct.new(:x, :y, :z) do
   def taxi_dist(other)
     (x - other.x).abs + (y - other.y).abs + ((z||0) - (other.z || 0)).abs
   end
+  def within_taxi(dist, rows, cols)
+    points = []
+    (self.y - dist).upto(self.y + dist) do |ny|
+      lenx = ((self.y - ny).abs - dist).abs * 2 + 1
+      (self.x-lenx/2).upto(self.x+lenx/2) do |nx|
+        ok = nx >= 0 && ny >= 0 && nx < cols && ny < rows
+        ok = ok && yield(nx, ny) if block_given? 
+        if ok
+          points << Point.new(nx, ny)
+        end
+      end
+    end
+    points
+  end
   def dist_comps(other)
     Point.new(other.x - x, other.y - y, ((other.z||0) - (z||0)))
   end

@@ -11,8 +11,8 @@ class Solution
       yield(line)
     end
   end
-  def debug(msg)
-    print(msg) if ENV['DEBUG']
+  def debug
+    print(yield) if ENV['DEBUG']
   end
 end
 
