@@ -34,12 +34,12 @@ Point = Struct.new(:x, :y, :z) do
   def neg
     Point.new(-x, -y, -(z||0))
   end
-  def direction_from(other)
+  def direction_from(other, compass = true)
     dx = self.x - other.x
     dy = self.y - other.y
     if dx > 0
       if dy == 0
-        :e
+        compass ? :e : :>
       elsif dy < 0
         :ne
       else
@@ -47,7 +47,7 @@ Point = Struct.new(:x, :y, :z) do
       end
     elsif dx < 0
       if dy == 0
-        :w
+        compass ? :w : :<
       elsif dy < 0
         :nw
       else
@@ -57,9 +57,9 @@ Point = Struct.new(:x, :y, :z) do
       if dy == 0
         nil
       elsif dy < 0
-        :n
+        compass ? :n : :^
       else
-        :s
+        compass ? :s : :v
       end
     end
   end
