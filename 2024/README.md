@@ -91,7 +91,8 @@ DEBUG=true ruby 06.rb part1 sample.txt
     even this, but the bug didn't manifest itself in the sample. Furthermore, I introduced
     a bug where I was only testing the top or bottom-most boxes (depending on direction of
     the move) for ability to move the group. Only figured out this bug existed by counting
-    numbers of objects in the map at each iteration and breaking when the counts changed.
+    numbers of objects in the map at each iteration and breaking out of the code
+    when the assertion that counts between iterations must be the same failed.
 * Day 16
   * Part 1 was A* all the way, took a bit to get the g_score function correct. But I was
     able to utilize my AStar module from last year.
@@ -118,4 +119,29 @@ DEBUG=true ruby 06.rb part1 sample.txt
     then try cheats at every step and use the memoized distances to quickly calulate the
     new distance for the cheated path.
   * Part 2: Gah, have to expand part1 a bit, but should be easy (he says at 2am)
-    It was easy. Day 1 code could be cleaned up a bit to use technique in part2.
+    Later: It was easy. Day 1 code could be cleaned up a bit to use technique in part2.
+* Day 21
+  * Part 1: Got code that works against the sample.txt, but not against the input.txt
+  * Gave up on this one, will circle back at some point
+* Day 22
+  * Part 1: More of a reading comprehension exercise than a coding challenge, but when I 
+    deciphered what was being asked, it was pretty easy to generate the solution
+  * Part 2: Initial attempt was finished quickly, but didn't work right away. Had to re-read
+    the problem description before understanding that the first price for each sequence of 4 diffs
+    had to be saved, not the largest one.
+* Day 23
+  * Part 1: Typical AoC, always a graph problem. Happy there has only been the one so far, but
+    that makes me worry. Modeled the graph as a hash of sets where the key was the computer
+    and the value was the set of all other computers next to it. Farted around with a n^3
+    algorithm before figuring out some optimizations to make it possible to quickly find
+    all 3 member nets. First attempt failed on the input.txt due to yet again a reading
+    comprehension problem: the net had to contain at least one computer whose name STARTED
+    with a 't', not CONTAINED a 't'.
+  * Part 2: Some googling led to this: https://www.altcademy.com/blog/discover-the-largest-complete-subgraph/
+    and a ruby implementation was trivial.
+  * Along the way, I felt like a diagram of the graph would be nice, so I created a sample.dot 
+    and sample.png. Tried it on the real input, but GraphViz took too long on it.
+    ```bash
+        dot -Tpng sample.dot -o sample.png
+    ```
+    

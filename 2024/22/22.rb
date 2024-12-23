@@ -24,7 +24,6 @@ class Solution
     sum
   end
   def part2
-
     inputs_to_prices = []
     input do |line|
       seq_to_price = Hash.new {|h,k| h[k] = nil}
