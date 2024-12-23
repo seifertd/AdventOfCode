@@ -33,6 +33,7 @@ class Solution
       net.any?{|n| n.start_with?('t')}
     end.count
   end
+  # Algorithm thanks to https://www.altcademy.com/blog/discover-the-largest-complete-subgraph/
   def bron_kerbosch(graph, r = Set.new, p = nil, x = Set.new, &block)
     if p.nil?
       p = Set.new graph.keys

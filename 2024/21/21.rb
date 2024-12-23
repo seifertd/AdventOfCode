@@ -109,9 +109,7 @@ class Keypad
         end
       end
     end
-    programs = programs.sort_by {|p| p.size}
-    shortest = programs[0].size
-    programs.find_all{|p| p.size == shortest}.uniq
+    programs.uniq
   end
 end
 class Solution
@@ -145,51 +143,13 @@ class Solution
         nnc = []
         next_codes.each do |nc|
           mc = kp.programs_for(nc)
-          if mc.first.size <= opt[kp_idx]
-            opt[kp_idx] = mc.first.size
-            nnc.concat(mc)
-          end
+          nnc.concat(mc)
         end
-        next_codes = nnc
+        next_codes = nnc.uniq
+        opt[kp_idx] = next_codes.map{|c| c.size}.min
       end
       debug { "CODE: #{code.join} COUNTS: #{opt.inspect}\n"}
       score += code.join.to_i * opt[keypads.length - 1]
-    end
-    score
-  end
-  def part1_old
-    keypads = [
-      Keypad.new(4, 3, NUMBER_BUTTONS),
-      Keypad.new(2, 3, MOVE_BUTTONS),
-      Keypad.new(2, 3, MOVE_BUTTONS),
-    ]
-    codes = []
-    input do |line|
-      codes << line.split(//).map(&:to_sym)
-    end
-    #new_codes = keypads[0].programs_for(codes[0])
-    #puts "#{codes[0]} => #{new_codes.inspect}"
-    #code = new_codes[0]
-    #new_codes = keypads[1].programs_for(code)
-    #puts "#{code.inspect} => #{new_codes.inspect}"
-    score = 0
-    codes.each do |code|
-      new_codes = [code]
-      complexity = code.join.to_i
-      length = 1
-      keypads.each do |kp|
-        collect = []
-        new_codes.each do |code|
-          collect.concat(kp.programs_for(code))
-        end
-        collect = collect.sort_by{|a| a.size}
-        shortest = collect.first.size
-        collect.reject!{|a| a.size > shortest}
-        new_codes = collect.uniq
-        length = new_codes.first.length
-      end
-      debug { "CODE: #{code.join} #{complexity} x #{length}\n" }
-      score += (complexity * length)
     end
     score
   end
