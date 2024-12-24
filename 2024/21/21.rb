@@ -1,160 +1,99 @@
 require '../../common/point'
 
+NUMBER_BUTTONS = {
+  A: Point.new(2,3), "3": Point.new(2,2), "6": Point.new(2,1), "9": Point.new(2,0),
+  "0": Point.new(1,3), "2": Point.new(1,2), "5": Point.new(1,1), "8": Point.new(1,0),
+  "1": Point.new(0,2), "4": Point.new(0,1), "7": Point.new(0,0), G: Point.new(0,3)
+}
+MOVE_BUTTONS = {
+  A: Point.new(2,0), "^": Point.new(1,0), ">": Point.new(2,1),
+  v: Point.new(1,1), "<": Point.new(0,1), G: Point.new(0,0)
+}
 class Keypad
   def initialize(rows, cols, buttons)
     @rows = rows
     @cols = cols
-    @button_map = Hash.new{|h,k| h[k] = []}
-    @pad = Array.new(rows) { Array.new(cols, nil)}
     @buttons = buttons
-    buttons.each {|b, p| @pad[p.y][p.x] = b}
-    rows.times do |y|
-      cols.times do |x|
-        @gap = Point.new(x,y) if @pad[y][x].nil?
-        @curr = @reset = Point.new(x,y) if @pad[y][x] == :A
-      end
-    end
+    @moves = Hash.new{|h,k| h[k] = []}
     buttons.values.each do |b1|
       buttons.values.each do |b2|
-        next if b2 == b1
-        paths = [[b1]]
-        dx = b2.x - b1.x; dx = dx == 0 ? dx : dx / dx.abs
-        dy = b2.y - b1.y; dy = dy == 0 ? dy : dy / dy.abs
-        #puts "FINDING: #{b1} -> #{b2} dx:#{dx} dy:#{dy} PATHS: #{paths.inspect}"
-        while paths.any?{|p| p.last != b2}
-          if paths.size > 10
-            puts "OVERFLOW: #{b1} -> #{b2} dx:#{dx} dy:#{dy} PATHS: #{paths.inspect}"
-            exit 42
-          end
-          paths.size.times do |pidx|
-            path = paths[pidx]
-            lp = path.last
-            next if lp == b2
-            nps = []
-            if dx != 0
-              nps << Point.new(lp.x + dx, lp.y)
-            end
-            if dy != 0
-              nps << Point.new(lp.x, lp.y + dy)
-            end
-            nps.reject! do |p|
-              p == @gap || (dy < 0 && p.y < b2.y) || (dy > 0 && p.y > b2.y) || (dx < 0 && p.x < b2.x) || (dx > 0 && p.x > b2.x)
-            end
-            #puts "PATH: #{path.inspect} B2: #{b2} NPS: #{nps.inspect}"
-            opath = Marshal.load(Marshal.dump(path))
-            nps.each.with_index do |p, idx|
-               if idx == 0
-                 path << p
-               else
-                 npath = Marshal.load(Marshal.dump(opath))
-                 npath << p
-                 paths << npath
-              end
-            end
-          end
+        next if b2 == b1 || b1 == self.gap || b2 == self.gap
+        @moves[[b1, b2]] = b1.taxi_paths(b2) do |np|
+          [
+            Point.new(np.x, np.y + 1),
+            Point.new(np.x, np.y - 1),
+            Point.new(np.x + 1, np.y),
+            Point.new(np.x - 1, np.y)
+          ].reject {|p| p == self.gap || p.x < 0 || p.y < 0 || p.x > cols - 1 || p.y > rows - 1 }
         end
-        #puts "FOUND: #{b1} -> #{b2} dx:#{dx} dy:#{dy} PATHS: #{paths.inspect}"
-        @button_map[[b1,b2]] = paths
       end
     end
   end
-  def reset
-    @curr = @reset
+  def gap
+    @buttons[:G]
   end
-  def paths(b1, b2)
-    @button_map[[b1,b2]]
-  end
-  def push(b)
-    b = @buttons[b]
-    ap = self.paths(@curr, b)
-    if b == @curr
+  def press(b1, b2)
+    if b1 == b2
       return [[:A]]
     end
-    @curr = b
-    programs = ap.map do |path|
-      path.each_cons(2).with_index.map do |pair, idx|
-        p1 = pair[0]
-        p2 = pair[1]
-        p2.direction_from(p1, false)
-      end
+    b1 = @buttons[b1]
+    b2 = @buttons[b2]
+    @moves[[b1, b2]].map do |move|
+      move << :A unless move.last == :A
+      move
     end
-    programs.each { |p| p << :A}
-    programs
-  end
-  def programs_for(code)
-    steps = []
-    self.reset
-    code.each do |button|
-      steps << self.push(button)
-    end
-    programs = [[]]
-    steps.each do |step|
-      if step.size == 1
-        programs.each { |prog| prog.concat(step.first) }
-      else
-        oprog = nil
-        numprogs = programs.size
-        step.each.with_index do |s, idx|
-          numprogs.times do |pidx|
-            prog = programs[pidx]
-            if idx == 0
-              oprog = prog.dup
-              prog.concat(s)
-            else
-              nprog = oprog.dup
-              nprog.concat(s)
-              programs << nprog
-            end
-          end
-        end
-      end
-    end
-    programs.uniq
   end
 end
 class Solution
-  NUMBER_BUTTONS = {
-    A: Point.new(2,3), "3": Point.new(2,2), "6": Point.new(2,1), "9": Point.new(2,0),
-    "0": Point.new(1,3), "2": Point.new(1,2), "5": Point.new(1,1), "8": Point.new(1,0),
-    "1": Point.new(0,2), "4": Point.new(0,1), "7": Point.new(0,0)
-  }
-  MOVE_BUTTONS = {
-    A: Point.new(2,0), "^": Point.new(1,0), ">": Point.new(2,1),
-    v: Point.new(1,1), "<": Point.new(0,1)
-  }
-  def part1
-    keypads = [
-      Keypad.new(4, 3, NUMBER_BUTTONS),
-      Keypad.new(2, 3, MOVE_BUTTONS),
-      Keypad.new(2, 3, MOVE_BUTTONS),
-    ]
-    codes = []
-    input do |line|
-      codes << line.split(//).map(&:to_sym)
-    end
-    score = 0
-    codes.each do |code|
-      opt = Hash.new{|h,k| h[k] = 1_000_000_000}
-      kp = keypads[0]
-      next_codes = kp.programs_for(code)
-      opt[0] = [next_codes.first.size, opt[0]].min
-      1.upto(keypads.length - 1) do |kp_idx|
-        kp = keypads[kp_idx]
-        nnc = []
-        next_codes.each do |nc|
-          mc = kp.programs_for(nc)
-          nnc.concat(mc)
-        end
-        next_codes = nnc.uniq
-        opt[kp_idx] = next_codes.map{|c| c.size}.min
+  def robot_len(movepad, moves, depth, cache)
+    return moves.size if depth <= 0
+    key = [moves, depth]
+    return cache[key] if cache.key?(key)
+    cmd_len = 0
+    b1 = :A
+    moves.each do |b2|
+      min_len = nil
+      movepad.press(b1, b2).each do |seq|
+        #debug { "MOVEPAD MOVES #{b1} - #{b2}: #{seq.inspect}\n"}
+        next_len = robot_len(movepad, seq, depth-1, cache)
+        min_len = min_len.nil? ? next_len : [min_len, next_len].min
       end
-      debug { "CODE: #{code.join} COUNTS: #{opt.inspect}\n"}
-      score += code.join.to_i * opt[keypads.length - 1]
+      cmd_len += (min_len || 0)
+      b1 = b2
+    end
+    cache[key] = cmd_len
+    cmd_len
+  end
+  def complexity(numpad, movepad, depth, cache, b1, b2)
+    min_len = nil
+    numpad.press(b1, b2).each do |moves|
+      robot_len = robot_len(movepad, moves, depth, cache)
+      min_len = min_len.nil? || robot_len < min_len ? robot_len : min_len
+    end
+    min_len
+  end
+  def find_complexity(numbots, cache = {})
+    numpad = Keypad.new(4,3,NUMBER_BUTTONS)
+    movepad = Keypad.new(2,3,MOVE_BUTTONS)
+    score = 0
+    input do |line|
+      b1 = :A
+      comp = 0
+      line.split(//).map(&:to_sym).each do |b2|
+        comp += complexity(numpad, movepad, numbots, cache, b1, b2)
+        b1 = b2
+      end
+      comp = comp * line.to_i
+      debug { "CODE: #{line} COMPLEXITY: #{comp}\n"}
+      score += comp
     end
     score
   end
+  def part1
+    find_complexity(2)
+  end
   def part2
-    raise "part2 solution not implemented"
+    find_complexity(25)
   end
   def input
     ARGF.each_line do |line|

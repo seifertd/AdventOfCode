@@ -8,6 +8,22 @@ Point = Struct.new(:x, :y, :z) do
   def taxi_dist(other)
     (x - other.x).abs + (y - other.y).abs + ((z||0) - (other.z || 0)).abs
   end
+  def taxi_paths(target)
+    paths = []
+    queue = Queue.new
+    queue << [self, []]
+    while !queue.empty?
+      p, path = queue.pop
+      if p == target
+        paths << path
+        next
+      end
+      cur_dist = p.taxi_dist(target)
+      ns = yield(p)
+      ns.each { |n| queue << [n, path.dup.push(n.direction_from(p, false))] if n.taxi_dist(target) < cur_dist}
+    end
+    paths
+  end
   def within_taxi(dist, rows, cols)
     points = []
     (self.y - dist).upto(self.y + dist) do |ny|
@@ -65,21 +81,30 @@ Point = Struct.new(:x, :y, :z) do
   end
   def direction_to(other)
     dir = direction_from(other)
-    if dir == :n
+    case dir
+    when :n
       :s
-    elsif dir == :ne
+    when :^
+      :V
+    when :ne
       :sw
-    elsif dir == :e
+    when :e
       :w
-    elsif dir == :se
+    when :>
+      :<
+    when :se
       :nw
-    elsif dir == :s
+    when :s
       :n
-    elsif dir == :sw
+    when :v
+      :^
+    when :sw
       :ne
-    elsif dir == :w
+    when :w
       :e
-    elsif dir == :nw
+    when :<
+      :>
+    when :nw
       :se
     end
   end
