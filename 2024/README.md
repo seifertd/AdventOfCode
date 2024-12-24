@@ -1,18 +1,38 @@
 Advent of Code 2024 solutions in ruby. All code can be run as follows:
 
-```
+```bash
 # Run the Part 1 code against the sample input
 ruby 01.rb part1 sample.txt
 # Run the part 1 code against the full input
 ruby 01.rb part1 input.txt
 # Run part 2 solution
 ruby 01.rb part2 input.txt
+```
 
+Many of the solutions use utility code found in the `common`
+directory that is at the same level as the year directories.
+Be sure when you run such solutions that the common directory
+can be found relative to the code correctly. If you checkout
+this entire git repo, you will create a proper strucure
+
+```
+├── 2024
+│   ├── 01
+│   ├── 02
+│   ├── 03
+...
+│   ├── 21
+│   ├── 22
+│   ├── 23
+│   ├── 24
+│   └── 25
+└── common
 ```
 
 Some solutions support detailed DEBUG output, but be careful, this
 can spew tons of output if run against the full input
-```
+
+```bash
 DEBUG=true ruby 06.rb part1 sample.txt
 ```
 
