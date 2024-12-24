@@ -85,7 +85,7 @@ Point = Struct.new(:x, :y, :z) do
     when :n
       :s
     when :^
-      :V
+      :v
     when :ne
       :sw
     when :e
