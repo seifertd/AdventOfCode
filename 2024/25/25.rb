@@ -1,16 +1,13 @@
 class Solution
   def parse_input
-    objs = ARGF.read.split("\n\n").map {|l| l.split("\n").map(&:chars)}
-    keys, locks = objs.partition do |obj|
-      obj[-1].all?{|c| c == '#'}
+    objs = ARGF.read.split("\n\n").map {|l| l.split("\n").map{|r| r.gsub('#', '1').gsub('.', '0').split(//) }.transpose }
+    objs.map! do |obj|
+      obj.map{|r| r.join.to_i(2)}
     end
-    keys = keys.map do |k|
-      k.transpose.map{|l| l.reverse.rindex('#')}
+    locks, keys = objs.partition do |obj|
+      obj[0] >= 64
     end
-    locks = locks.map do |l|
-      l.transpose.map{|l| l.rindex('#')}
-    end
-    return [locks, keys]
+    [locks, keys]
   end
   def part1
     locks, keys = parse_input
@@ -20,9 +17,8 @@ class Solution
     count = 0
     keys.uniq.each do |key|
       locks.uniq.each do |lock|
-        fits = key.zip(lock).map(&:sum)
-        count += 1 if fits.all?{|f| f <= 5 }
-        #debug { "KEY: #{key.inspect} LOCK: #{lock.inspect} FITS: #{fits.inspect}: COUNT: #{count}\n" }
+        count += 1 if key.each.with_index.all?{|k, idx| k & lock[idx] == 0}
+        debug { "KEY: #{key.inspect} LOCK: #{lock.inspect} COUNT: #{count}\n" }
       end
     end
     count
