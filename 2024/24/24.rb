@@ -78,7 +78,7 @@ class Solution
       sum = (sum << 1) | registers[reg]
     end
     #debug { "x:#{x}(#{x.to_s(2)}) + y:#{y}(#{y.to_s(2)}) = z:#{z}(#{z.to_s(2)})(sum:#{x & y}=#{(x & y).to_s(2)})\n"}
-    (x & y) == z
+    (x + y) == z
   end
   def word(program, combo)
     combo.map{|c| program[c][3]}.sort.join(',')
@@ -91,20 +91,34 @@ class Solution
     debug { "EXECUTED, WORKS: #{check(new_regs).inspect}\n"}
     pairs = program.size.times.to_a.combination(2).to_a
     debug { "NUM PAIRS: #{pairs.size}\n"}
-    debug { "NUM COMBOS: #{pairs.combination(2).size}\n"}
-    pairs.combination(2).each do |combo|
+    num_combos = (ENV['COMBOS'] || 4).to_i
+    total_to_check = pairs.combination(num_combos).size
+    debug { "NUM COMBOS: #{total_to_check}\n"}
+    start = Time.now.to_i
+    pairs.combination(num_combos).each.with_index do |combo, count|
+      if count % 1_000_000 == 0
+        now = Time.now.to_i
+        if now > start
+          rate = count.to_f / (now - start)
+          eta = (total_to_check - count) / rate
+          print "CHECKED #{count+1} of #{total_to_check}. ETA: #{eta.to_i} seconds\r"
+        end
+      end
       pair1 = combo[0]
       pair2 = combo[1]
-      #pair3 = combo[2]
-      #pair4 = combo[3]
+      if num_combos == 4
+        pair3 = combo[2]
+        pair4 = combo[3]
+      end
       next if pair2.include?(pair1[0]) || pair2.include?(pair1[1])
-      #next if pair3.include?(pair1[0]) || pair3.include?(pair1[1])
-      #next if pair4.include?(pair1[0]) || pair4.include?(pair1[1])
-      #next if pair3.include?(pair2[0]) || pair4.include?(pair2[1])
-      #next if pair4.include?(pair2[0]) || pair4.include?(pair2[1])
-      #next if pair4.include?(pair3[0]) || pair4.include?(pair3[1])
-      combo = [pair1, pair2].flatten
-      #combo = [pair1, pair2, pair3, pair4].flatten
+      if num_combos == 4
+        next if pair3.include?(pair1[0]) || pair3.include?(pair1[1])
+        next if pair4.include?(pair1[0]) || pair4.include?(pair1[1])
+        next if pair3.include?(pair2[0]) || pair4.include?(pair2[1])
+        next if pair4.include?(pair2[0]) || pair4.include?(pair2[1])
+        next if pair4.include?(pair3[0]) || pair4.include?(pair3[1])
+      end
+      combo = [pair1, pair2, pair3, pair4].flatten.compact
       new_regs = execute(program, registers, combo)
       if check(new_regs)
         puts "COMBO: #{combo.inspect} #{word(program,combo)}"

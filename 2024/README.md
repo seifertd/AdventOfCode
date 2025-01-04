@@ -164,4 +164,19 @@ DEBUG=true ruby 06.rb part1 sample.txt
     ```bash
         dot -Tpng sample.dot -o sample.png
     ```
-    
+* Day 24
+  * Part 1: Was easy to model the circuit. I just iterated lines of the program, skipping any 
+    whose inputs did not yet have a value until all had a value, then calculating the output
+    number was simple bit twiddling
+  * Part 2: Did not finish. Didn't try to Google for adder circuits or anything fancy like that.
+    The brute force solution I came up with would eventually find the correct set of four swapped
+    wires maybe, but only within 88 years :(
+* Day 25
+  * Part 1: Modeling that keys and locks as integers by transposing the up and down diagrams
+    to left and right and then treating the sequence of '#' and '.' chars of each 'tooth' as
+    1's and 0's respectively and converting this binary string to an integer. Then a key fits
+    a lock if each of the 5 'teeth' of the lock and key AND'ed together equals 0.
+  * Part 2: I didn't finish 2 part 2's, so no start for me :(
+
+That's it for me for 2024 AoC. Maybe I will revisit the 2 part 2's I missed later in the year
+if I get bored.
