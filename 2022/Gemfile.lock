@@ -1,28 +1,28 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    diff-lcs (1.5.1)
+    diff-lcs (1.6.2)
     gosu (1.4.6)
     pairing_heap (3.1.0)
-    parallel (1.26.3)
-    rexml (3.4.2)
+    parallel (1.27.0)
+    rexml (3.4.4)
     rgl (0.5.10)
       pairing_heap (>= 0.3.0)
       rexml (~> 3.2, >= 3.2.4)
       stream (~> 0.5.3)
-    rspec (3.13.0)
+    rspec (3.13.2)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
       rspec-mocks (~> 3.13.0)
-    rspec-core (3.13.2)
+    rspec-core (3.13.6)
       rspec-support (~> 3.13.0)
-    rspec-expectations (3.13.3)
+    rspec-expectations (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-mocks (3.13.2)
+    rspec-mocks (3.13.7)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-support (3.13.1)
+    rspec-support (3.13.6)
     ruby-progressbar (1.13.0)
     stream (0.5.5)
 
@@ -37,4 +37,4 @@ DEPENDENCIES
   ruby-progressbar
 
 BUNDLED WITH
-   2.5.18
+   2.7.1
