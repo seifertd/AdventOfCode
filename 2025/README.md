@@ -52,3 +52,6 @@ DEBUG=true ruby 06.rb part1 sample.txt
   * Part 2 - Another brute force solution by taking the number as 
     a string, splitting it into equal sized chunks, then if chunks two
     through N are the same as chunk 1, the id is invalid
+* Day 3
+  * Part 1 - extremely easy
+  * Part 2 - devilishly difficult
