@@ -88,3 +88,12 @@ DEBUG=true ruby 06.rb part1 sample.txt
       ```
     I forgot to account for the last one :(
 * Day 6
+  * Part 1 - Simple string splitting to get all the operands as integers, then
+    ruby's inject function on this array using the operator turned into a symbol
+    makes quick work of this problem
+  * Part 2 - Same as the first, but collecting all the operands as integers
+    is a bit harder. I noticed that the operator always appears in the first column 
+    of each problem. From there you have to collect all the numbers in that
+    and all columns up to the next operand, throwing away the empty column, then
+    perform the operation and keep the running total. The whole right to left 
+    rigamarole was a distraction. Just do it left to right. Addition is transitive.
