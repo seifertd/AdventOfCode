@@ -43,16 +43,26 @@ class Solution
     count = 0
     accessible_rolls.count
   end
+  def draw_grid
+    printf("\033[H")
+    @grid.each do |row|
+      puts row.join
+    end
+  end
   def part2
     parse
     total_removed = 0
+    printf("\033[2J") if ENV['ANIMATE']
     while true
+      draw_grid if ENV['ANIMATE']
+      puts "Total removed: #{total_removed}       " if ENV['ANIMATE']
       ar = accessible_rolls
       break if ar.count == 0
       total_removed += ar.count
       ar.each do |p|
         @grid[p.y][p.x] = '.'
       end
+      sleep 0.3 if ENV['ANIMATE']
     end
     total_removed
   end
@@ -85,5 +95,6 @@ if __FILE__ == $0
   end
   if err > 0
     puts "Usage: ruby #{__FILE__} [part1|part2]"
+    puts "  Provide ANIMATE=true environment variable to show animation for part2"
   end
 end
