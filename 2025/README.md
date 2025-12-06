@@ -56,22 +56,35 @@ DEBUG=true ruby 06.rb part1 sample.txt
   * Part 1 - extremely easy
   * Part 2 - devilishly difficult
 * Day 4 - 20 minutes total on this easy day
-  * Part 1 - ability to reuse common code from previous years, like the ----------
-    class I wrote makes these types of problems a breeze
+  * Part 1 - ability to reuse common code from previous years, like the
+    Point class I wrote makes these types of problems a breeze
   * Part 2 - true brute force and consumption of tons of RAM, but that is cheap!
 * Day 5
   * Part 1 - despite bugs in the code I wrote to merge ranges, got 
     the right answer anyway
   * Part 2 - Bugs caused me to get the wrong answer on the real input,
-    but raising exceptions when counting all the merged ranges 
-    revealed a bug. I had not considered all the ways the ranges
-    could overlap with other ranges.
-    - 1: <------->
-             <---------->
-    - 2: <--------->
-        <------>
-    - 3: <--------->
-            <--->
-    - 4:     <---->
-          <------------>
+    but raising an exception on detecting a overlap while iterating
+    all the *supposedly* merged ranges revealed the bug. I had not
+    considered all the ways the ranges could overlap with other ranges.
+    - 1: 
+      ```
+      <------->
+         <---------->
+      ```
+    - 2:
+      ```
+      <--------->
+             <------>
+      ```
+    - 3:
+      ```
+      <--------->
+         <--->
+      ```
+    - 4:
+      ```
+           <---->
+      <------------>
+      ```
     I forgot to account for the last one :(
+* Day 6
