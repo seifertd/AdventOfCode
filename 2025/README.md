@@ -105,15 +105,14 @@ DEBUG=true ruby 06.rb part1 sample.txt
     perform the operation and keep the running total. The whole right to left 
     rigamarole was a distraction. Just do it left to right. Addition is transitive.
 * Day 7
-  * Part 1 - easy enough to just keep track of what column in the grid had a problem
-    in it and figure out if it was going to hit a splitter when it tried to overlap
-    to the next row down. A simple Set of column indexes where there was a problem
-    made short work of this one
-  * Part 2 - A simple change of the Set to an Array and allowing it to accumulate
+  * Part 1 - easy enough to just keep track of what column in the grid had a beam
+    in it by adding column indexes to a Set, and then figure out if it was going to
+    hit a splitter when it advanced to the next row down.
+  * Part 2 - A simple change of the Set to a Array and allowing it to accumulate
     duplicate column indexes worked for the sample, but of course did not scale for
-    the real input. Changing the Array to hold the count of beams in that column answer
-    we iterated down the grid instead of trying to make it hold all beam column indexes
-    was the trick to making this run very quickly even on the real input.
+    the real input. Changing the Array to a Hash with keys being the column indexes 
+    and the values holding the count of beams in that column as we iterated down
+    the grid was the trick to making this run very quickly even on the real input.
 * Day 8
   * Part 1 - struggled a bit trying to get deletes of ruby Sets from a containing
     Set to work. Also had to fix the `dist` method of my Point class. I gave up
