@@ -3,7 +3,7 @@ Point = Struct.new(:x, :y, :z) do
     super(x, y, z)
   end
   def dist(other)
-    Math.sqrt(x * other.x + y * other.y + (z || 0) * (other.z || 0))
+    Math.sqrt((x - other.x)**2 + (y - other.y)**2 + ((z || 0) - (other.z || 0))**2)
   end
   def taxi_dist(other)
     (x - other.x).abs + (y - other.y).abs + ((z||0) - (other.z || 0)).abs

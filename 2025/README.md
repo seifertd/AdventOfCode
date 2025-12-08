@@ -114,3 +114,13 @@ DEBUG=true ruby 06.rb part1 sample.txt
     the real input. Changing the Array to hold the count of beams in that column answer
     we iterated down the grid instead of trying to make it hold all beam column indexes
     was the trick to making this run very quickly even on the real input.
+* Day 8
+  * Part 1 - struggled a bit trying to get deletes of ruby Sets from a containing
+    Set to work. Also had to fix the `dist` method of my Point class. I gave up
+    on the containing Set and changed the it to an Array. From there the
+    approach I took of calculating all pairs of points and their distances, then sort
+    the list of pairs by distance, then iterate over the first N (10 for the sample,
+    1000 for the real input) and add pairs of points to sets (circuits), merging sets
+    when common points are encountered.
+  * Part 2 - Just changed to keep adding points until we are left with one set of
+    points (1 circuit) containing all the points.
