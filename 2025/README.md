@@ -116,11 +116,11 @@ DEBUG=true ruby 06.rb part1 sample.txt
 * Day 8
   * Part 1 - struggled a bit trying to get deletes of ruby Sets from a containing
     Set to work. Also had to fix the `dist` method of my Point class. I gave up
-    on the containing Set and changed the it to an Array. From there the
-    approach I took of calculating all pairs of points and their distances, then sort
-    the list of pairs by distance, then iterate over the first N (10 for the sample,
-    1000 for the real input) and add pairs of points to sets (circuits), merging sets
-    when common points are encountered.
+    on the containing Set and changed it to an Array. From there, I calculated all
+    pairs of points and their distances, then sorted the list of pairs by distance,
+    then iterated over the first N (10 for the sample, 1000 for the real input) and
+    added pairs of points to sets (circuits), merging sets when common points were
+    encountered in multiple sets.
   * Part 2 - Just changed to keep adding points until we are left with one set of
     points (1 circuit) containing all the points.
 * Day 9
