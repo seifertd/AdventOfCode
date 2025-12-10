@@ -123,3 +123,32 @@ DEBUG=true ruby 06.rb part1 sample.txt
     when common points are encountered.
   * Part 2 - Just changed to keep adding points until we are left with one set of
     points (1 circuit) containing all the points.
+* Day 9
+  * Part 1 - straightforward and easy. Simple n^2 iteration of all possible pairs of
+    points, calculating the area of the associated square and keeping track of the maximum
+  * Part 2 - Struggled a lot with this one. My first idea was if the opposite corners
+    of the squares were also inside the enclosed area, the square was enclosed.  This
+    is a bad assumption.  You could have a situation like this:
+    ```
+    RGGGR     RGGGR
+    RGGGR     RGGGR
+    RGGGGGGGGGGGGGR
+    RGGGGGGGGGGGGGR
+    ```
+    That little notch at the top is not in the enclosed area.
+    The next thing I tried was to implement a function that uses line counts of edge crosses
+    to determine if a point is inside or outside a polygon. Then tried running that against every
+    point in each square. This worked for the sample input, but probably would have taken several
+    years on the full input. Even pruning the set of points down to just the perimeter points of
+    the square wasn't enough. My next try was to flood fill the polygon, then check each point of
+    the squares against a Hash of points. Again, worked great on the sample, but running flood
+    fill against the real input again would have taken too long. My final try was to split all the line
+    segments into a vertical set and a horizontal set, then iterate over each horizontal segment
+    from lowest y coordinate to highest, then for the segment y coordinate itself, calculate
+    a list of gaps on the x coordinate where the polygon didn't lie, reusing the crossing
+    counting algorithm. Then do the same, but use the y coordinate of the next horizontal
+    segment - 1 to find the gaps. This split the horizontal axis of the grid into a manageable
+    number of row gaps, some one coordinate thin, but the majority encompassing much more of
+    the vertical space. Then it was easy to check which row gaps intersected with each of the
+    squares and to further determine if any of the horizontal gaps in each of those row gaps
+    intersected with the square.
