@@ -152,3 +152,32 @@ DEBUG=true ruby 06.rb part1 sample.txt
     the vertical space. Then it was easy to check which row gaps intersected with each of the
     squares and to further determine if any of the horizontal gaps in each of those row gaps
     intersected with the square.
+* Day 10
+  * Part 1 - Brute force generation of all combinations of buttons starting with 1 and going
+    up until the right combination is hit. Some bit twiddling using logical xor to flip the 
+    state of the indicators.
+  * Part 2 - I tried to solve this one using a recursive DFS with extensive pruning. It worked
+    fine on the sample, and worked fine on most of the input set, but broke down on a double
+    handful of them. I let it run over night and there were still 2 machines this could not solve.
+    I had to google for help and was immediately pointed towards gaussian elimination and a 
+    system of equations. I worked out a couple of solutions by hand, and was thinking about trying
+    to implement code to do this myself, but googled for a library instead and settled on the shell out to
+    z3 as the solution.
+* Day 11
+  * Part 1 - Simple DFS to find all paths worked
+  * Part 2 - Given that there ended up being more than 300 trillion paths, the brute force DFS
+    was not going to work. Running one for a few minutes and hearing the CPU fans go off clued me
+    in. I thought it would be super easy since there were only a few hundred paths in the input
+    for part 1, but they changed up the starting node for part 2.  At first I thought a simple
+    divide and conquer would work: count start to fft, fft to dac, dac to end, multiply,
+    then repeat for start to dac, dac to fft, fft to end and add. Generating a diagram of the
+    graph using graphviz helped me see the second part was not necessary as there are no loops
+    in the graph and the fft node comes before dac in the directed tree. The count of paths from dac
+    to out took milliseconds, but counting srv to fft was taking a long time. Again, the diagram clued
+    me in on a pruning strategy: if we reach the fft node level, but are not at fft, prune. This got
+    the number of paths from srv to fft pretty easily. So now to attack the middle, but the
+    techniques so far were still too slow as there are probably billions of paths between fft and
+    the dac node level. Some head scratching later, I figured I could backtrack from dac to fft and
+    build up a list of nodes that directly could lead to fft, then use that list to further prune:
+    if a node is reached that is not on that list while running the DFS for the fft to dac path,
+    prune that path immediately as it can't reach dac.
