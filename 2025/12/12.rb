@@ -15,6 +15,9 @@ class Grid
   def free_area
     area - @places.size * 7
   end
+  def unpacked_capacity
+    (self.width / 3) * (self.height / 3)
+  end
   def reset
     @grid = Array.new(@height) { 0 }
   end
@@ -88,11 +91,15 @@ class Solution
   def shapes_fit(g)
     # Make a copy of the grid
     g = Marshal.load(Marshal.dump(g))
-    gs_area = g.shapes.inject(&:+) * 7
+    gs_total = g.shapes.inject(&:+)
+    gs_area = gs_total * 7
     holes_avail = g.area - gs_area
-    debug { "Grid Area: #{g.area} Shape Area: #{gs_area} Holes: #{holes_avail}\n" }
     return false if g.area < gs_area
-    x, y = 0, 0
+    # without packing, how many shapes fit
+    if g.unpacked_capacity >= gs_total
+      return true
+    end
+    debug { "Grid Area: #{g.area} Shape Area: #{gs_area} Holes: #{holes_avail}\n" }
     true
   end
   def part1
