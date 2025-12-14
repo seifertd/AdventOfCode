@@ -181,6 +181,11 @@ DEBUG=true ruby 06.rb part1 sample.txt
     build up a list of nodes that directly could lead to fft, then use that list to further prune:
     if a node is reached that is not on that list while running the DFS for the fft to dac path,
     prune that path immediately as it can't reach dac.
+
+    Sample Graph:
+
+    ![Sample Graph](11/sample.png)
+
 * Day 12
   * Part 1 - ha ha. I can't believe I spent so much time trying to code a solution to a problem
     that is not NP complete.
