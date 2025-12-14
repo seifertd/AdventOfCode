@@ -100,7 +100,7 @@ class Solution
       return true
     end
     debug { "Grid Area: #{g.area} Shape Area: #{gs_area} Holes: #{holes_avail}\n" }
-    true
+    false
   end
   def part1
     parse
