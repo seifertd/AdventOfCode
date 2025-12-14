@@ -1,4 +1,22 @@
 digraph {
+fft [
+  shape=box,
+  style="filled,bold"
+  fillcolor="black",
+  color="red",
+  fontcolor="white",
+  penwidth=2,
+  fontname="Helvetica-Bold"
+]
+dac [
+  shape=box,
+  style="filled,bold"
+  fillcolor="black",
+  color="red",
+  fontcolor="white",
+  penwidth=2,
+  fontname="Helvetica-Bold"
+]
 svr ->  {aaa bbb};
 aaa ->  fft;
 fft ->  ccc;
