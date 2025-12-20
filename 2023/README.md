@@ -47,5 +47,7 @@ Notes, Blunders and Victories
   platform tilting, so there has to be a cycle. Find it and the offset it starts at, then mod the 1 billion minus
   the offset by the cycle length add the offset back and replay that many tilts to get the answer.
 * Day 16: Got stuck shortly on part 2 because part 1 was mutating the parsed cave data. Had to make sure 
-  I copied the cave after parsing it for use as input inot part 1 and part 2.
+  I copied the cave after parsing it for use as input into part 1 and part 2.
 * Day 18: Part 1 can be simulated. Part 2 can't be using the normal x,y grid. Sparse grids?
+  * 2 years later: Using ideas from later years (my implementation of a
+    sparse grid, I guess) I was able to solve this one.

@@ -1,254 +1,262 @@
-Plan = Struct.new(:dir, :units, :color)
-Dig = Struct.new(:plan, :grid, :rows, :cols, :dig_x, :dig_y, :boundary) do
-  def initialize
-    self.plan = []
-    self.boundary = []
-  end
+require '../../common/point'
 
-  def reset(rows, cols, dig_x, dig_y)
-    self.rows = rows
-    self.cols = cols
-    self.dig_x = dig_x
-    self.dig_y = dig_y
-    one_row = ['.'] * self.cols
-    self.grid = []
-    self.boundary = []
-    rows.times do 
-      self.grid << one_row.dup
-      self.boundary << [false] * self.cols
-    end
-    self.grid[dig_y][dig_x] = '#'
-    self.boundary[dig_y][dig_x] = true
+class Segment
+  attr_accessor :p1, :p2, :prev, :next
+  def initialize(p1,p2,prev)
+    self.p1 = p1
+    self.p2 = p2
+    self.prev = prev
   end
-
-  def inside?(y, x)
-    #puts "POINT #{y},#{x} INSIDE?"
-    crossings = 0
-    cx = 0
-    while cx < x
-      #print "(#{y},#{cx}) crossings: #{crossings}: "
-      if self.boundary[y][cx]
-        if y > 0 && y < self.rows - 1 && self.boundary[y-1][cx] && self.boundary[y+1][cx]
-          # crossing a vertical wall
-          #puts "Vertical crossing"
-          crossings += 1
-        else
-          # crossing a horizontal wall
-          corner_1 = if y > 0 && self.boundary[y-1][cx]
-                 # up to right turn
-                 :ccw
-               elsif y < self.rows - 2 && self.boundary[y+1][cx]
-                 # down to right turn
-                 :cw
-               end
-          #print " c1(@x=#{cx}) is #{corner_1.inspect}."
-          dx = 1
-          while cx + dx < self.cols && cx + dx < x && self.boundary[y][cx+dx]
-            # traversing the horizontal wall
-            dx += 1
-          end
-          #print " horizontal wall len #{dx}"
-          cx += (dx-1)
-          corner_2 = if y > 0 && self.boundary[y-1][cx]
-                 # left to up
-                 :ccw
-               elsif y < self.rows - 2 && self.boundary[y+1][cx]
-                 # left to down
-                 :cw
-               end
-          #puts " c2(@x=#{cx}) is #{corner_1.inspect}."
-          if corner_1 == corner_2
-            crossings += 2
-          else
-            crossings += 1
-          end
-        end
+  def hseg_at_y(y)
+    return nil unless self.vertical?
+    [self.prev, self.next].find {|hseg| hseg.p1.y == y }
+  end
+  def orientation
+    if p1.x == p2.x
+      if p2.y > p1.y
+        :down
+      else
+        :up
       end
-      cx += 1
-    end
-    #puts " CROSSINGS: #{crossings} ODD? #{crossings.odd?}"
-    crossings.odd?
-  end
-
-  def area
-    vol = 0
-    #4.times do |y|
-    self.rows.times do |y|
-      self.cols.times do |x|
-        if self.boundary[y][x]
-          vol += 1
-        else
-          if self.inside?(y, x)
-            vol += 1
-          end
-        end
+    else
+      if p2.x > p2.y
+        :right
+      else
+        :left
       end
-      #puts "After row #{y+1}, vol=#{vol}"
     end
-    vol
   end
-
+  def horizontal?
+    [:left, :right].include?(self.orientation)
+  end
+  def vertical?
+    [:up, :down].include?(self.orientation)
+  end
+  def at_right_angle_to?(seg)
+    self.vertical? && seg.horizontal? || self.horizontal? && seg.vertical?
+  end
+  def to_s
+    "Segment: #{p1}->#{p2}:#{orientation} next.nil? #{self.next.nil?} prev.nil? #{self.prev.nil?}\n"
+  end
   def inspect
-    puts "Dig: rows=#{self.rows} cols=#{self.cols} digy=#{self.dig_y},digx=#{self.dig_x}"
-    puts self.grid.map(&:join).join("\n")
+    to_s
   end
+end
 
-  def execute
-    self.plan.each do |d|
-      dx = dy = 0
-      dx = 1 if d.dir == 'R'
-      dx = -1 if d.dir == 'L'
-      dy = 1 if d.dir == 'D'
-      dy = -1 if d.dir == 'U'
-      d.units.times do
-        self.dig_x += dx
-        self.dig_y += dy
-        self.grid[dig_y][dig_x] = '#'
-        self.boundary[dig_y][dig_x] = true
+class RowGaps
+  attr_accessor :y1, :y2, :gaps
+  def initialize
+    @gaps = []
+  end
+  def overlaps?(x1, x2)
+    @gaps.any? do |gap|
+      gx1 = gap.first
+      gx2 = gap.last
+      gx1 >= x1 && gx1 <= x2 || gx2 >= x1 && gx2 <= x2
+    end
+  end
+  def to_s
+    "RowGap: y:#{y1}->#{y2} gaps: #{gaps.inspect}\n"
+  end
+  def inspect
+    to_s
+  end
+end
+
+class Solution
+  DIR = {'R' => :e, 'L' => :w, 'U' => :n, 'D' => :s,
+         '0' => :e, '2' => :w, '3' => :n, '1' => :s}
+  def parse(part = :part1)
+    @points = []
+    @min_x = @min_y = 1_000_000_000_000
+    @max_x = @max_y = 0
+    current = start = Point.new(0,0)
+    @points << start
+    input do |line|
+      dir, dist, color = line.split(" ")
+      if part == :part2
+        dist = color[2,5].to_i(16)
+        dir = color[7]
+      end
+      current = current.move(DIR[dir], dist.to_i)
+      @points << current
+      @min_x = [@min_x, current.x].min
+      @min_y = [@min_y, current.y].min
+      @max_x = [@max_x, current.x].max
+      @max_y = [@max_y, current.y].max      
+    end
+    raise "origin is not 0,0" if @points.first.x != 0 || @points.first.y != 0
+    raise "last point #{@points.last} is not equal to first point #{@points.first}" if @points.last != @points.first
+    @points.pop
+    # change origin to 0,0
+    @points.each { |p| p.x -= @min_x; p.y -= @min_y }
+    @max_x -= @min_x
+    @max_y -= @min_y
+    @min_x = 0
+    @min_y = 0
+
+    @segments = []
+    @points.each_cons(2) do |p1, p2|
+      seg = Segment.new(p1, p2, @segments.last)
+      if seg.prev
+        seg.prev.next = seg
+      end
+      @segments << seg
+    end
+    # Add the last seg
+    lseg = Segment.new(@points.last, @points.first, @segments.last)
+    @segments.last.next = lseg
+    @segments << lseg
+    # connect first and last seg
+    @segments.last.next = @segments.first
+    @segments.first.prev = @segments.last
+
+    @segments.each.with_index do |s, idx|
+      raise "Seg #{idx} has no prev" if s.prev.nil?
+      raise "Seg #{idx} has no next" if s.next.nil?
+    end
+
+    @vsegs = @segments.find_all{ |s| s.vertical? }.sort_by { |s| [s.p1.x, s.p1.y] }
+    @hsegs = @segments.find_all{ |s| s.horizontal? }.sort_by { |s| [s.p1.y, s.p1.x] }
+    y_coords = @hsegs.map{|s| s.p1.y}.sort.uniq
+    @row_gaps = []
+    y_coords.each_cons(2) do |y1, y2|
+      gap = RowGaps.new
+      gap.y1 = y1
+      gap.y2 = y1
+      gap.gaps = gaps_at(y1)
+      @row_gaps << gap
+      if y2 - y1 > 1
+        gap = RowGaps.new
+        gap.y1 = y1 + 1
+        gap.y2 = y2 - 1
+        gap.gaps = gaps_at(gap.y2)
+        @row_gaps << gap
       end
     end
+    # Add last hseg gaps
+    gap = RowGaps.new
+    gap.y1 = y_coords.last
+    gap.y2 = gap.y1
+    gap.gaps = gaps_at(gap.y2)
+    @row_gaps << gap
+    debug { "Points: #{@points.size} x:#{@min_x}-#{@max_x} y:#{@min_y}-#{@max_y}\n" }
+    debug { "First 15: #{@points[0,15].inspect}\n" }
+    debug { "horizontal segments: #{@hsegs.size} First 10: #{@hsegs[0,10].inspect}\n" }
+    debug { "vertical segments: #{@vsegs.size} First 10: #{@vsegs[0,10].inspect}\n" }
+    debug { "Row Gaps: #{@row_gaps.size} First 10: #{@row_gaps[0,10].inspect}\n" }
   end
-end
-
-def parse_dig
-  dig = Dig.new
-  max_x = max_y = 0
-  min_x = min_y = 0
-  x = y = 0
-  ARGF.each_line do |line|
-    line.chomp!
-    p = Plan.new
-    dir, units, color = line.split(" ")
-    dig.plan << Plan.new(dir, units.to_i, color.gsub(/[\(\)]/, ''))
-    if dir == 'R'
-      x += units.to_i
-      max_x = [max_x, x].max
-    elsif dir == 'L'
-      x -= units.to_i
-      min_x = [min_x, x].min
-    elsif dir == 'D'
-      y += units.to_i
-      max_y = [max_y, y].max
-    else
-      y -= units.to_i
-      min_y = [min_y, y].min
+  #PRINT_ROWS = [21,22,23]
+  PRINT_ROWS = []
+  def gaps_at(y)
+    x = @min_x
+    gaps = []
+    vseg = @vsegs.find{ |s| s.p1.x == x && y.between?(*([s.p1.y, s.p2.y].sort)) }
+    crossings = 0
+    if vseg
+      crossings = 1
+      if [vseg.p1.y, vseg.p2.y].include?(y)
+        hseg = vseg.hseg_at_y(y)
+        x = [hseg.p1.x, hseg.p2.x].max + 1
+      else
+        x = 1
+      end
     end
-    #puts "After parsing #{dir}:#{units}, x=#{x}(#{min_x}->#{max_x}), y=#{y}(#{min_y}->#{max_y})"
+    puts "#{y}: x=#{x} FIRST VSEG: #{vseg || "NIL"}" if PRINT_ROWS.include?(y)
+    loop do
+      vseg = @vsegs.find { |s| s.p1.x > x && y.between?(*([s.p1.y, s.p2.y].sort)) }
+      puts "#{y}: x:#{x} crossings: #{crossings} NEXT VSEG: #{vseg || "NIL"}, x=#{x}" if PRINT_ROWS.include?(y)
+      break if !vseg
+      if !crossings.odd?
+        gaps << [x, vseg.p1.x - 1]
+      end
+      if y != vseg.p1.y && y != vseg.p2.y
+        # Case 5, crossing a vertical line
+        #debug { "#{y}: CASE 5\n" }
+        crossings += 1
+        x = vseg.p1.x + 1
+      else
+        if vseg.p1.x == @max_x
+          break
+        end
+        hseg = vseg.hseg_at_y(y)
+        next_vseg = hseg.next != vseg ? hseg.next : hseg.prev
+        if vseg.orientation == next_vseg.orientation
+          crossings += 1
+        end
+        x = next_vseg.p1.x + 1
+      end
+    end
+    if x <= @max_x
+      gaps << [x, @max_x]
+    end
+    puts "#{y}: FINAL GAPS: #{gaps}" if PRINT_ROWS.include?(y)
+    gaps
   end
-  cols = max_x - min_x + 1
-  rows = max_y - min_y + 1
-  x -= min_x
-  y -= min_y
-  dig.reset(rows, cols, x, y)
-  dig
-end
-
-dig = parse_dig
-
-def part1(dig)
-  debug = (ENV['DEBUG'] || '').include?('part1')
-  dig.execute
-  puts dig.inspect if debug
-  dig.area
-end
-
-Dig2 = Struct.new(:rows, :cols) do
-  def initialize
-    self.rows = Hash.new{|h,k| h[k] = []}
-    self.cols = Hash.new{|h,k| h[k] = []}
+  def print_grid(force_print = true)
+    grid = Hash.new{|h1,row| h1[row] = Hash.new {|h2,col| h2[col] = '.'}}
+    @segments.each do |seg|
+      seg.p1.traverse(seg.p2) { |p| grid[p.y][p.x] = '#'}
+    end
+    0.upto(@max_y) do |row|
+      row_gap = @row_gaps.find { |rg| row.between?(rg.y1, rg.y2)}
+      row_gap.gaps.each do |(x1, x2)|
+        grid[row][x1] = '0'
+        grid[row][x2] = '0'
+      end
+      0.upto(@max_x) do |col|
+        print grid[row][col] if force_print || PRINT_ROWS.include?(row)
+      end
+      puts "#{row}: #{(@max_x + 1) - (row_gap.gaps.map{|g| g[1] - g[0] + 1}.inject(&:+) || 0)}" if force_print || PRINT_ROWS.include?(row)
+    end
   end
-  def add_horizontal(y, x, len)
-    self.rows[y] << [x, len]
-    self.rows[y] = self.rows[y].sort_by{|x,len| x}
-  end
-  def add_vertical(x, y, len)
-    self.cols[x] << [y, len]
-    self.cols[x] = self.cols[x].sort_by{|y,len| y}
-  end
-
-  def col_intersects?(col, x, y)
-  end
-
-  def len_row(y)
-  end
-
-  def len_row_plus(y)
-  end
-
-  def area
-    rows = self.rows.keys.sort
-    cols = self.cols.keys.sort
+  def solve(part)
+    parse(part)
+    #print_grid(true)
     area = 0
-    rows.each do |y|
-      area += len_row(y)
-      area += len_row_plus(y+1) * 
-      x = cols.first
-      inside = false
-      len = 0
-      cols.each do |cx|
-        self.cols[cx].each do |ci|
-          if col_intersects?(ci, y, cx)
-            inside = !inside
-            break
-          end
-        end
-        if inside
-          len += (cx - x)
-        end
-        x = cx
-
+    raise "FIRST ROW GAP IS NOT AT Y=0" if @row_gaps.first.y1 != 0
+    raise "FIRST ROW GAP IS NOT AT Y=0" if @row_gaps.first.y2 != 0
+    @row_gaps.each do |row_gap|
+      agap = ((@max_x + 1) - (row_gap.gaps.map{|g| g[1] - g[0] + 1}.inject(&:+) || 0)) * (row_gap.y2 - row_gap.y1 + 1)
+      debug { "GAP: #{row_gap.y1} -> #{row_gap.y2} gaps: #{row_gap.gaps.inspect} agap: #{agap}\n" }
+      area += agap
+    end
+    area
+  end
+  def part1
+    solve(:part1)
+  end
+  def part2
+    solve(:part2)
+  end
+  def input
+    ARGF.each_line do |line|
+      line.chomp!
+      yield(line)
     end
   end
-end
-
-def parse_dig2(dig)
-  dig2 = Dig2.new
-  if ENV['DEBUG'] == 'part2_test'
-  dig2.add_horizontal(0, 0, 7)
-  dig2.add_vertical(6, 0, 6)
-  dig2.add_horizontal(5, 4, 3)
-  dig2.add_vertical(4, 5, 3)
-  dig2.add_horizontal(7, 4, 3)
-  dig2.add_vertical(6, 7, 3)
-  dig2.add_horizontal(9, 1, 6)
-  dig2.add_vertical(1, 7, 3)
-  dig2.add_horizontal(7, 0, 2)
-  dig2.add_vertical(0, 5, 3)
-  dig2.add_horizontal(5, 0, 3)
-  dig2.add_vertical(2, 2, 4)
-  dig2.add_horizontal(2, 0, 3)
-  dig2.add_vertical(0, 0, 3)
-  return dig2
+  def debug
+    print(yield) if ENV['DEBUG']
   end
-  dirs = ['R', 'D', 'L', 'U']
-  x = y = 0
-  dig.plan.each do |p|
-    units = p.color[1..-2].to_i(16)
-    dir = dirs[p.color[-1].to_i]
-    #puts "Dig #{dir}: #{units} #{p.color}"
-    if dir == 'R'
-      dig2.add_horizontal(y, x, units)
-      x += units
-    elsif dir == 'D'
-      dig2.add_vertical(x, y, units)
-      y += units
-    elsif dir == 'L'
-      dig2.add_horizontal(y, x - units, units)
-      x -= units
-    else
-      dig2.add_vertical(x, y - units, units)
-      y -= units
-    end
+end
+
+if __FILE__ == $0
+  err = 0
+  if ARGV.length == 0
+    err = 1
+    puts "ERROR: no arg provided"
+  elsif ARGV[0] == 'part1'
+    ARGV.shift
+    solution = Solution.new
+    puts "Part 1: #{solution.part1}"
+  elsif ARGV[0] == 'part2'
+    ARGV.shift
+    solution = Solution.new
+    puts "Part 2: #{solution.part2}"
+  else
+    puts "ERROR: Unknown arguments: #{ARGV.inspect}"
   end
-  raise "Didn't get back to origin: #{y},#{x}" if x != 0 && y != 0
-  dig2
+  if err > 0
+    puts "Usage: ruby #{__FILE__} [part1|part2]"
+  end
 end
-
-dig2 = parse_dig2(dig)
-
-def part2(dig2)
-  dig2.area
-end
-
-puts "Part 1: #{part1(dig)}"
-puts "Part 2: #{part2(dig2)}"

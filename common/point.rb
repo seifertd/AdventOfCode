@@ -108,26 +108,42 @@ Point = Struct.new(:x, :y, :z) do
       :se
     end
   end
-  def move(dir)
+  def move(dir, mag = 1)
     case dir
     when :n, :^
-      Point.new(self.x, self.y - 1)
+      Point.new(self.x, self.y - mag)
     when :ne
-      Point.new(self.x + 1, self.y - 1)
+      Point.new(self.x + mag, self.y - mag)
     when :e, :>
-      Point.new(self.x + 1, self.y)
+      Point.new(self.x + mag, self.y)
     when  :se
-      Point.new(self.x + 1, self.y + 1)
+      Point.new(self.x + mag, self.y + mag)
     when :s, :v
-      Point.new(self.x, self.y + 1)
+      Point.new(self.x, self.y + mag)
     when :sw
-      Point.new(self.x - 1, self.y + 1)
+      Point.new(self.x - mag, self.y + mag)
     when :w, :<
-      Point.new(self.x - 1, self.y)
+      Point.new(self.x - mag, self.y)
     when :nw
-      Point.new(self.x - 1, self.y - 1)
+      Point.new(self.x - mag, self.y - mag)
     else
       raise "Unknown dir for Point#move: #{dir.inspect}"
+    end
+  end
+  def traverse(to)
+    return if to == self
+    dx = to.x - self.x
+    dy = to.y - self.y
+    if dx != 0
+      x1, x2 = [self.x, to.x].sort
+      x1.upto(x2) do |x|
+        yield Point.new(x, to.y)
+      end
+    else
+      y1, y2 = [self.y, to.y].sort
+      y1.upto(y2) do |y|
+        yield Point.new(to.x, y)
+      end
     end
   end
   def to_s
