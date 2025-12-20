@@ -120,6 +120,7 @@ DEBUG=true ruby 06.rb part1 sample.txt
     paths leading to the goal. But now I have this in my toolbox.
 * Day 17
   * Part 1 easy, part 2 not possible without me cheating
+  * [12/2025] After cheating, was able to solve this one
 * Day 18
   * More astar utilization for both parts
 * Day 19

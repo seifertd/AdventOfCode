@@ -95,34 +95,15 @@ class Solution
     self.ip = 0
     self.output = []
   end
-  def run(require_self_output = false)
-    debug "START PROGRAM: #{self.program.inspect}\n"
-    debug "REGISTERS: A: #{self.a} B: #{self.b} C: #{self.c}\n"
-    looping = false
-    runstate = Hash.new {|h,k| h[k] = Set.new}
-    while self.ip < self.program.length - 1 && !looping
-      debug "   > OPCODE: #{self.program[self.ip]} OP: #{OPS[self.program[self.ip]]} OPERAND: #{self.program[self.ip+1]} IP: #{self.ip}\n"
+  def run
+    while self.ip < self.program.length - 1
+      #debug "   > OPCODE: #{self.program[self.ip]} OP: #{OPS[self.program[self.ip]]} OPERAND: #{self.program[self.ip+1]} IP: #{self.ip}\n"
       currstate = [self.a, self.b, self.c]
-      if require_self_output
-        output.each.with_index do |o, oidx|
-          if o != self.program[oidx]
-            return BAD_OUTPUT
-          end
-        end
-      end
-      if runstate[self.ip].include?(currstate)
-        debug "LOOP DETECTED: ip:#{self.ip} registers: #{currstate.inspect}\n"
-        looping = true
-        break
-      else
-        runstate[self.ip] << currstate 
-      end
       self.send(OPS[self.program[self.ip]], self.program[self.ip + 1])
-      debug "   < A: #{self.a} B: #{self.b} C: #{self.c}\n"
+      #debug "   < A: #{self.a} B: #{self.b} C: #{self.c}\n"
     end
-    debug "STOP PROGRAM: REGISTERS: A: #{self.a} B: #{self.b} C: #{self.c} looping: #{looping} ip: #{self.ip}\n"
-    debug "OUTPUT: #{self.output.inspect}\n"
-    looping ? LOOP : OK
+    #debug "STOP PROGRAM: REGISTERS: A: #{self.a} B: #{self.b} C: #{self.c} ip: #{self.ip}\n"
+    #debug "OUTPUT: #{self.output.inspect}\n"
   end
   def reset(registers)
     self.a = registers[0]
@@ -137,94 +118,31 @@ class Solution
     debug "OUTPUT:[#{self.output.join(',')}]\n"
     self.output.join(',')
   end
-  def part2_sample2
-    oa = 1
-    a = 1
-    b = 0
-    c = 0
-    prog = [0,3,5,4,3,0]
-    out = []
-    ans = -1
-    while true
-      a = a / (2 ** 3) # 0,3 adv(3)
-      out << (a % 8)   # 5,4 out(4)
-      if out == prog
-        # we have the answer
-        ans = oa
-        break
-      end
-      if out != prog[0,out.length] || a == 0
-        # next a
-        out = []
-        oa = oa + 1
-        a = oa
-        b = 0
-        c = 0
-      end
-    end
-    debug "OUT: #{out.inspect} PROG: #{prog.inspect}\n"
-    ans
-  end
-  def part2_input
-    oa = 1 
-    a = 1
-    b = 0
-    c = 0
-    ip = 0
-    prog = [2,4,1,1,7,5,0,3,1,4,4,4,5,5,3,0]
-    out = []
-    ans = -1
-    loop do
-      b = a % 8  #bst(4) 2,4
-      b = b ^ 1  #bxl(1) 1,1
-      c = a / (2 ** b) #cdv(5) 7,5
-      a = a / (2 ** 3) #adv(3) 0,3
-      b = b ^ 4   # bxl(4) 1,4
-      b = b ^ c   # bxc(4) 4,4
-      out << (b % 8) # 5,5
-      if out == prog
-        # we have the answer
-        ans = oa
-        break
-      end
-      if out != prog[0,out.length] || a == 0
-        debug "ITER: #{oa} A:#{a} B:#{b} C:#{c} OUT: #{out.inspect}\n" if oa % 1_000_000 == 3
-        # next a
-        out = []
-        oa = oa + 1
-        a = oa
-        b = 0
-        c = 0
-      end
-    end
-    ans
-  end
   def part2
-    part2_input
-  end
-  def part2_old
     parse_program
     oregs = [self.a, self.b, self.c]
     ans = -1
-    new_a = 1
+    new_a = 0
+    oa = 0
     debug "PROGRAM: #{self.program.inspect}\n"
+    p_idx = 1
     loop do
       reset([new_a, oregs[1], oregs[2]])
-      status = run(true)
-      if status == LOOP
-        debug "Register value #{new_a} produced infinite loop"
-      elsif status == BAD_OUTPUT
-        #debug "Program not producing self for #{new_a}\n"
-      else
-        if self.output == self.program
-          ans = new_a
+      run
+      if self.output == self.program[-p_idx,p_idx]
+        if p_idx == self.program.length
+          debug "p_idx: #{p_idx} oa: #{oa} new_a: #{new_a} out: #{self.output.inspect} prog #{self.program.inspect}\n"
+          ans = oa
           break
         end
+        debug "p_idx: #{p_idx} oa: #{oa} a: #{a} out: #{self.output.inspect} prog #{self.program.inspect}\n"
+        p_idx += 1
+        oa *= 8
+        new_a = oa
+      else
+        oa += 1
+        new_a = oa
       end
-      if new_a % 10000 == 0
-        debug "A: #{new_a} OUTPUT: #{self.output.inspect}\n"
-      end
-      new_a += 1
     end
     ans
   end
