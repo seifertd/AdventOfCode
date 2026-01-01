@@ -130,8 +130,9 @@ Point = Struct.new(:x, :y, :z) do
       raise "Unknown dir for Point#move: #{dir.inspect}"
     end
   end
-  def traverse(to)
-    return if to == self
+  def traverse(to, include_first = false)
+    return to_enum(__method__, to, include_first) unless block_given?
+    return [].to_enum if !include_first && to == self
     dx = to.x - self.x
     dy = to.y - self.y
     if dx != 0
@@ -139,11 +140,13 @@ Point = Struct.new(:x, :y, :z) do
       x1.upto(x2) do |x|
         yield Point.new(x, to.y)
       end
-    else
+    elsif dy != 0
       y1, y2 = [self.y, to.y].sort
       y1.upto(y2) do |y|
         yield Point.new(to.x, y)
       end
+    else
+      yield(self)
     end
   end
   def to_s
