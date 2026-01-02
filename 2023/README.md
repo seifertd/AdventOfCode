@@ -64,3 +64,43 @@ Notes, Blunders and Victories
   Keep track of all the ratings populations that land on 'A', then
   multiply all the rating ranges together, and sum all those up. Very
   large numbers!
+  * Day 20 (12/2025): Part 1 - Simple brute force simulation worked. Part 2 was a lot harder and
+    I needed hints from others to be able to solve this. One thing that helped a lot to see what was
+    going on was to visulize the circuit as a digraph. I wrote a shell script that turns your input
+    into a `dot` file that can be fed to graphviz's dot tool to generate a png of the circuit.
+    We see the circuit consists of N blobs of flip flops each of which leads
+    down to rx via a conjunction module. At the bottom of this graph, we have
+    the following:
+    ```
+      conj X (N of these) -> conj Y -> rx
+    ```
+    Here, we find N conj X nodes going into rx thru another conj Y. As soon as these
+    are all HI, the conj Y node will send a LO to rx. Need to determine when this will happen.
+    If we assume that each of conj X nodes flip to HI on a cycle (big ASSumption)
+    then rx will receive a LO on the LCM of the cycle counts. But AoC is fond
+    of LCM problems.
+    Blind alleys and blunders: We have to determine at which button press
+    each of the conj X SENT a HI to the conj Y. Keeping track of the
+    last sent pulse by each conjunction doesn't work because often during a button
+    press, the conj X modules will send a HI to conj Y, but then send a bunch of
+    LO's to it as the queue of pulses is drained. The mistake is looking for the
+    LO signals being sent to rx as the last signal of the button press. The
+    instructions don't say that has to hold.
+    We CAN however assume that if conj X sends a HI to conj y, the next signal
+    to be processed will be from the next conj X in the graph. This is due to the
+    circuit using a FIFO to process the signals and each conj X is at the same
+    depth in the digraph.
+ * Day 21 (12/2025) - Part 1 - Again brute force simulation. Part 2 - solution
+   has eluded me, even after reading details of and lifting an implementation from
+   https://github.com/villuna/aoc23/wiki/A-Geometric-solution-to-advent-of-code-2023,-day-21
+ * Day 22 (12/2025) - Part 1 - pretty easy after optimizing the code to settle all the
+   blocks by using a hash of x,y coord to maximum height to move blocks down as far
+   as they would go in one step. Then build up two graphs: supports and supported_by,
+   which can be used to easily figure out what blocks can be removed without causing
+   others to fall. Part 2 was just an extended application of using the same
+   technique in part 1, but with using a queue to keep track of the chain reaction
+   that can occur when you remove a block. I have in mind adding an animated simulation
+   of at least the settling phase, got so far as rendering the input in simulated
+   3d here: https://seifertd.github.io/AdventOfCode/2023/22/visualizer.html. You can
+   open your own input.txt to see the jumble of blocks you start with.
+
