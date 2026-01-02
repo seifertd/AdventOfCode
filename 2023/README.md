@@ -104,5 +104,6 @@ Notes, Blunders and Victories
    3d here: https://seifertd.github.io/AdventOfCode/2023/22/visualizer.html. You can
    open your own input.txt to see the jumble of blocks you start with:
    <img width="1303" height="933" alt="image" src="https://github.com/user-attachments/assets/af97a879-409d-4b54-936a-4571204b1041" />
+   This was based heavily on Tsoding's 3d renderer he describes in https://www.youtube.com/watch?v=qjWkNZ0SXfo&list=LL
 
 
