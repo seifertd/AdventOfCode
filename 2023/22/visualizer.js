@@ -21,14 +21,18 @@ toscreen = (p) => {
   };
 }
 
-rotate_xz = ({x,y,z}, angle) => {
+rotate_xz = (p, angle) => {
+  let tv = {x: (maxx-minx)/2.0*scale, y: 0, z: (maxz-minz)/2.0*scale};
+  p = translate(p, negate(tv));
   const c = Math.cos(angle);
   const s = Math.sin(angle);
-  return {
-    x: x * c - z * s,
-    y,
-    z: x * s + z * c
+  p = {
+    x: p.x * c - p.z * s,
+    y: p.y,
+    z: p.x * s + p.z * c
   };
+  //return p;
+  return translate(p, tv);
 }
 
 line = (p1, p2) => { 
@@ -63,6 +67,18 @@ project = ({x,y,z}) => {
   }
 }
 
+negate = ({x,y,z}) => {
+   return {x: -x, y: -y, z: -z};
+}
+
+camera_translate = ({x,y,z}) => {
+  return { x: x - camera.x, y: y - camera.y, z: z - camera.z};
+}
+
+translate = (p, dv) => {
+  return {x: p.x + dv.x, y: p.y + dv.y, z: p.z + dv.z};
+}
+
 translate_z = ({x,y,z}, dz) => {
   return { x, y, z: z + dz};
 }
@@ -75,16 +91,6 @@ resize = ({x,y,z}, factor) => {
   return {x: x*factor, y: y*factor, z: z*factor};
 }
 
-const cube = [
-  {x:  0.25, y:  0.25, z: 0.25},
-  {x: -0.25, y:  0.25, z: 0.25},
-  {x: -0.25, y: -0.25, z: 0.25},
-  {x:  0.25, y: -0.25, z: 0.25},
-  {x:  0.25, y:  0.25, z: -0.25},
-  {x: -0.25, y:  0.25, z: -0.25},
-  {x: -0.25, y: -0.25, z: -0.25},
-  {x:  0.25, y: -0.25, z: -0.25},
-];
 const fs = [
   [0,1,2,3],
   [4,5,6,7],
@@ -95,61 +101,37 @@ const fs = [
 ];
 
 const blocks = [];
-/*
-const blocks = [
-  {p1: {x:1, z:0, y:-3}, p2: {x:1, z:2, y:-3}},
-  {p1: {x:0, z:0, y:-2}, p2: {x:2, z:0, y:-2}},
-  {p1: {x:0, z:2, y:-1}, p2: {x:2, z:2, y:-1}},
-  {p1: {x:0, z:0, y:0}, p2: {x:0, z:2, y:0}},
-  {p1: {x:2, z:0, y:1}, p2: {x:2, z:2, y:1}},
-  {p1: {x:0, z:1, y:2}, p2: {x:2, z:1, y:2}},
-  {p1: {x:1, z:1, y:4}, p2: {x:1, z:1, y:5}},
-]
-*/
 
 block_to_cube = (b) => {
-  xmin = Math.min(...[b.p2.x - 0.5, b.p1.x - 0.5]);
-  xmax = Math.max(...[b.p2.x + 0.5, b.p1.x + 0.5]);
-  ymin = Math.min(...[b.p2.y - 0.5, b.p1.y - 0.5]);
-  ymax = Math.max(...[b.p2.y + 0.5, b.p1.y + 0.5]);
-  zmin = Math.min(...[b.p2.z - 0.5, b.p1.z - 0.5]);
-  zmax = Math.max(...[b.p2.z + 0.5, b.p1.z + 0.5]);
+  const bxmin = Math.min(...[b.p2.x - 0.5, b.p1.x - 0.5]);
+  const bxmax = Math.max(...[b.p2.x + 0.5, b.p1.x + 0.5]);
+  const bymin = Math.min(...[b.p2.y - 0.5, b.p1.y - 0.5]);
+  const bymax = Math.max(...[b.p2.y + 0.5, b.p1.y + 0.5]);
+  const bzmin = Math.min(...[b.p2.z - 0.5, b.p1.z - 0.5]);
+  const bzmax = Math.max(...[b.p2.z + 0.5, b.p1.z + 0.5]);
 
   return [
-    {x: xmax, y: ymax, z: zmax},
-    {x: xmin, y: ymax, z: zmax},
-    {x: xmin, y: ymin, z: zmax},
-    {x: xmax, y: ymin, z: zmax},
-    {x: xmax, y: ymax, z: zmin},
-    {x: xmin, y: ymax, z: zmin},
-    {x: xmin, y: ymin, z: zmin},
-    {x: xmax, y: ymin, z: zmin},
-  ];
-}
-
-cube_at = (p, s) => {
-  return [
-    {x: p.x+s/2, y: p.y+s/2, z: p.z+s/2},
-    {x: p.x-s/2, y: p.y+s/2, z: p.z+s/2},
-    {x: p.x-s/2, y: p.y-s/2, z: p.z+s/2},
-    {x: p.x+s/2, y: p.y-s/2, z: p.z+s/2},
-    {x: p.x+s/2, y: p.y+s/2, z: p.z-s/2},
-    {x: p.x-s/2, y: p.y+s/2, z: p.z-s/2},
-    {x: p.x-s/2, y: p.y-s/2, z: p.z-s/2},
-    {x: p.x+s/2, y: p.y-s/2, z: p.z-s/2},
+    {x: bxmax, y: bymax, z: bzmax},
+    {x: bxmin, y: bymax, z: bzmax},
+    {x: bxmin, y: bymin, z: bzmax},
+    {x: bxmax, y: bymin, z: bzmax},
+    {x: bxmax, y: bymax, z: bzmin},
+    {x: bxmin, y: bymax, z: bzmin},
+    {x: bxmin, y: bymin, z: bzmin},
+    {x: bxmax, y: bymin, z: bzmin},
   ];
 }
 
 draw_cube = (c) => {
   for (const f of fs) {
     if (f.length == 2) {
-      const p1 = toscreen(project(translate_z(rotate_xz(resize(c[f[0]], scale), angle), dz)));
-      const p2 = toscreen(project(translate_z(rotate_xz(resize(c[f[1]], scale), angle), dz)));
+      const p1 = toscreen(project(camera_translate(rotate_xz(resize(c[f[0]], scale), angle))));
+      const p2 = toscreen(project(camera_translate(rotate_xz(resize(c[f[1]], scale), angle))));
       line(p1,p2);
     } else {
       for (let i = 0; i < f.length; i++) {
-        const p1 = toscreen(project(translate_z(rotate_xz(resize(c[f[i]], scale), angle), dz)));
-        const p2 = toscreen(project(translate_z(rotate_xz(resize(c[f[(i+1) % f.length]], scale), angle), dz)));
+        const p1 = toscreen(project(camera_translate(rotate_xz(resize(c[f[i]], scale), angle))));
+        const p2 = toscreen(project(camera_translate(rotate_xz(resize(c[f[(i+1) % f.length]], scale), angle))));
         line(p1,p2);
       }
     }
@@ -158,11 +140,46 @@ draw_cube = (c) => {
 }
 
 const FPS = 60;
-let dz = 2;
+const camera = {x: 0, y: 0, z: -2};
+const camera_moving = {x: 0, y: 0, z: 0}
+const camera_v = 0.05;
+
 let angle = 0;
 let scale = 0.25;
 let prunedLines = 0;
+let minx = miny = minz = 1000000;
+let maxx = maxy = maxz = -1000000;
+
 const dscale = 0.01;
+
+document.onkeydown = (e) => {
+  if (e.key == "ArrowUp") {
+    camera_moving.y = 1;
+  }
+  if (e.key == "ArrowDown") {
+    camera_moving.y = -1;
+  }
+  if (e.key == "ArrowLeft") {
+    camera_moving.x = -1;
+  }
+  if (e.key == "ArrowRight") {
+    camera_moving.x = 1;
+  }
+}
+document.onkeyup = (e) => {
+  if (e.key == "ArrowUp") {
+    camera_moving.y = 0;
+  }
+  if (e.key == "ArrowDown") {
+    camera_moving.y = 0;
+  }
+  if (e.key == "ArrowLeft") {
+    camera_moving.x = 0;
+  }
+  if (e.key == "ArrowRight") {
+    camera_moving.x = 0;
+  }
+}
 
 dataFile.addEventListener('change', evt => {
   const file = evt.target.files[0];
@@ -170,9 +187,7 @@ dataFile.addEventListener('change', evt => {
     const reader = new FileReader();
     reader.onload = e => {
       const contents = e.target.result;
-      newblocks = [];
-      let minx = miny = minz = 1000000
-      let maxx = maxy = maxz = -1000000
+      blocks.length = 0;
       contents.split("\n").forEach( line => {
         if (line.length == 0) {
           return;
@@ -186,26 +201,14 @@ dataFile.addEventListener('change', evt => {
         maxx = Math.max(maxx, p1[0], p2[0]);
         maxy = Math.max(maxy, p1[2], p2[2]);
         maxz = Math.max(maxz, p1[1], p2[1]);
-        newblocks.push(
+        blocks.push(
           {
             p1: {x:p1[0],z:p1[1],y:p1[2]},
             p2: {x:p2[0],z:p2[1],y:p2[2]}
           }
         );
       });
-      blocks.length = 0;
-      ddy = Math.round((maxy - miny) / 2.0);
-      ddx = Math.round((maxx - minx) / 2.0);
-      ddz = Math.round((maxz - minz) / 2.0);
-      for (b of newblocks) {
-        b.p1.y -= ddy;
-        b.p2.y -= ddy;
-        b.p1.x -= ddx;
-        b.p2.x -= ddx;
-        b.p1.z -= ddz;
-        b.p2.z -= ddz;
-        blocks.push(b)
-      }
+      console.log(`x: ${minx}->${maxx} y: ${miny}->${maxy} z: ${minz}->${maxz}`)
     }
     reader.readAsText(file);
   }
@@ -225,22 +228,14 @@ frame = () => {
   angle += 0.1*Math.PI*dt;
   prunedLines = 0;
   clear();
-  /*
-  for (let v of cube) {
-    v = rotate_xz(v, angle);
-    v = translate_z(v, dz);
-    v = project(v);
-    v = toscreen(v);
-    point(v, 10, FOREGROUND);
-  }
-  */
+  camera.y -= (camera_moving.y * camera_v);
+  camera.x -= (camera_moving.x * camera_v);
   for (const block of blocks) {
     draw_cube(block_to_cube(block))
   }
   ctx.fillStyle = FOREGROUND;
   ctx.font = "14px serif"
   ctx.fillText(`SCALE: ${scale} PRUNED LINES: ${prunedLines}`,20,20);
-  //draw_cube(cube_at({x:0.5,y:0,z:0}, 0.5))
   setTimeout(frame, 1000/FPS);
 }
 setTimeout(frame, 1000/FPS);
