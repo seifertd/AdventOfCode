@@ -105,5 +105,21 @@ Notes, Blunders and Victories
    open your own input.txt to see the jumble of blocks you start with:
    <img width="1303" height="933" alt="image" src="https://github.com/user-attachments/assets/af97a879-409d-4b54-936a-4571204b1041" />
    This was based heavily on Tsoding's 3d renderer he describes in https://www.youtube.com/watch?v=qjWkNZ0SXfo&list=LL
+ * Day 23 (1/2026) - Part 1 - brute force path walking solution worked, then I replaced it with a solution that involves
+   transforming the grid into a graph of intersections (nodes) and weighted edges between them. Looking at this graph for both
+   the sample and input shows that for part 1 anyway, we are dealing with a directed graph with no cycles. Therefore,
+   you can do a topological sort and then walk the nodes in sort order and calculate the distance to that
+   node based on the parent node's distance and the edge weights. Here is the graph for the sample: 
 
+   [!Part 1 Graph](./2023/sample_part1.png)
 
+   I did all of this thinking it was how you had to solve part 2. But unfortunately, without the iciness, we end up 
+   with a graph with tons of cycles:
+
+   [!Part 2 Graph](./2023/sample_part1.png)
+
+   I went back to a brute force dfs solution, which I had working for the sample, but not the input before I found
+   the topological sort solution. Looking at the solution, I realized it was slow because I was copying the visited
+   set on each recursion. Instead, I properly added nodes to the visited set before recursion, then properly removed
+   that node as the recursion returned. It was still pretty slow, but I left it running while going out for a 
+   burrito and it finished 15 minutes and a lot of cpu fan blowing later. There has to be a faster way.
