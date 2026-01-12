@@ -111,12 +111,12 @@ Notes, Blunders and Victories
    you can do a topological sort and then walk the nodes in sort order and calculate the distance to that
    node based on the parent node's distance and the edge weights. Here is the graph for the sample: 
 
-   [Part 1 Graph](./23/sample_part1.png)
+   ![Part 1 Graph](./23/sample_part1.png)
 
    I did all of this thinking it was how you had to solve part 2. But unfortunately, without the iciness, we end up 
    with a graph with tons of cycles:
 
-   [Part 2 Graph](./23/sample.png)
+   ![Part 2 Graph](./23/sample.png)
 
    I went back to a brute force dfs solution, which I had working for the sample, but not the input before I found
    the topological sort solution. Looking at the solution, I realized it was slow because I was copying the visited
