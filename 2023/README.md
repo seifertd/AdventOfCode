@@ -123,3 +123,14 @@ Notes, Blunders and Victories
    set on each recursion. Instead, I properly added nodes to the visited set before recursion, then properly removed
    that node as the recursion returned. It was still pretty slow, but I left it running while going out for a 
    burrito and it finished 15 minutes and a lot of cpu fan blowing later. There has to be a faster way.
+ * Day 24 (1/2026) - Part 1 - They fooled me. I saw quickly that
+   this involved solving a bunch of algebraic equations, so I wrote
+   a Gaussian elimination solver based on a description of the algo
+   on geeknet. I also remember coding such a thing on my old
+   Casio programmable calculator for my numeric methods class
+   at U of Mich in the 1980's when I was there. I thought that Part 
+   2 was just going to be extend the solution into 3 dimensions
+   but it turned out to be rat hole. I could see by analyzing the
+   problem that it involved finding intersections of linear
+   sequences, and was steered to Chinese Remainder Theorem, but
+   I had to vibecode the solution :(
