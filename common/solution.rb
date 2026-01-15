@@ -6,9 +6,13 @@ class Solution
     raise "part2 solution not implemented"
   end
   def input
-    ARGF.each_line do |line|
-      line.chomp!
-      yield(line)
+    if block_given?
+      ARGF.each_line do |line|
+        line.chomp!
+        yield(line)
+      end
+    else
+      return to_enum(:input)
     end
   end
   def debug
