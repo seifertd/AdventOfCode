@@ -1,0 +1,35 @@
+THIS IS TOO HARD, JUST BRUCE FORCE IT.
+
+Keep a list of boxes that turn on lights.
+
+Add boxes
+We have the following cases:
+
+A. A new box turning on lights overlaps with an existing
+   1. It completely covers the old one: replace old with new
+   2. It is completely covered by the old one: ignore and keep the old
+   3. otherwise: add 1 or 2 new boxes. Or remove old box, replace by 2 new ones
+B. A new box turning off lights overlaps with an existing:
+   1. it completely covers the old one: remove old one
+   2. it is completely covered by the old one:
+      - replace the old with 4 new boxes containing the hole
+   3. it intersects completely the box: replace old with 2 new boxes
+   4. a chunk is taken out of the corner: replace old with 2 new boxes
+   5. a chunk is taken out of an edge: replace old with 3 new boxes
+C. A toggling box is added:
+   1. It intersects with no boxes: added as a new box
+   2. It completely covers a box: existing box is removed. transform new box into 4 with the hole
+   3. It is completely covered by existing
+      - replace the old with 4 new boxes containing the hole
+   4. a chunk is taken out of the corner: replace old with 2 new boxes
+   5. a chunk is taken out of an edge. replace old with 3 new boxes
+
+A.3:
+                                            +=======+
++=======+             +=======+             |   2   |
+|       |        +====|       |=====+  +====|-------|=====+    
+|   O   |=====+  |  1 |   O   |  2  |  |    |   O   |     |
+|       |  1  |  +====|       |=====+  |    |       |  1  |
++=======+-----|       +=======+        |    +=======+     |
+    |    2    |                        +==================+                   
+    +=========+                                            
