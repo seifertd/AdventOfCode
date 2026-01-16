@@ -41,3 +41,9 @@ Notes, Blunders and Victories
   method, which does all the escaping needed in the input strings
 * Day 9: Few enough nodes that dfs solves both parts. Used graphviz
   to create an image of the input graph.
+* Day 10: Brute force for Part 1, had to watch the video and learn
+  about the look-n-say sequence's interesting elements. Messed
+  about trying to start with arbitrary strings and convert substrings
+  into elements as the strings evolve, but that didn't work too 
+  well. Then saw that the input string itself is an element and
+  the evolution code was much simpler from there.
