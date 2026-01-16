@@ -36,5 +36,6 @@ File                              blank        comment           code
 --------------------------------------------------------------------------------
 SUM:                                  2              1            211
 --------------------------------------------------------------------------------
+  ```
 * Day 8: Brutally easy in Ruby using eval and the String#inspect
   method, which does all the escaping needed in the input strings
