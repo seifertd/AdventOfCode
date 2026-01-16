@@ -39,3 +39,5 @@ Notes, Blunders and Victories
 
 * Day 8: Brutally easy in Ruby using eval and the String#inspect
   method, which does all the escaping needed in the input strings
+* Day 9: Few enough nodes that dfs solves both parts. Used graphviz
+  to create an image of the input graph.

@@ -1,0 +1,8 @@
+graph WeightedGraph {
+  London;
+  Dublin;
+  Belfast;
+  London -- Dublin [label="464", weight=464];
+  London -- Belfast [label="518", weight=518];
+  Dublin -- Belfast [label="141", weight=141];
+}
