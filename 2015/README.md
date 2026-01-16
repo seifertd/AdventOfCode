@@ -27,15 +27,15 @@ Notes, Blunders and Victories
   modern Eric would have done this.
 * Day 7: Two solutions, an emulator and a recursive one. The recursive
   solution is more satisfying, and I guess slightly less complex:
-  ```
-  --------------------------------------------------------------------------------
-File                              blank        comment           code
---------------------------------------------------------------------------------
-07/07_emulate.rb                      1              0            114
-07/07_recursive.rb                    1              1             97
---------------------------------------------------------------------------------
-SUM:                                  2              1            211
---------------------------------------------------------------------------------
-  ```
+
+      --------------------------------------------------------------------------------
+      File                              blank        comment           code
+      --------------------------------------------------------------------------------
+      07/07_emulate.rb                      1              0            114
+      07/07_recursive.rb                    1              1             97
+      --------------------------------------------------------------------------------
+      SUM:                                  2              1            211
+      --------------------------------------------------------------------------------
+
 * Day 8: Brutally easy in Ruby using eval and the String#inspect
   method, which does all the escaping needed in the input strings
