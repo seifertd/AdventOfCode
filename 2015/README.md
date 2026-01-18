@@ -47,3 +47,13 @@ Notes, Blunders and Victories
   into elements as the strings evolve, but that didn't work too 
   well. Then saw that the input string itself is an element and
   the evolution code was much simpler from there.
+* Day 11: Several hours mucking about with a Santa's Password
+  class that implemented  26 digit bijective numeration. I fell
+  into the iterate for a billion years trap implementing Part 1
+  and trying to generate the next valid password on the sample
+  data in the problem description. I saw that it would speed things
+  up a lot to detect the illegal characters and jump to a password
+  whose number was past that, but my initial tries were bad. I was
+  adding powers of 26 to get past the bad password and all I had
+  to do was set the bad digit to the next one and set all remaining
+  digits to 'a'.
