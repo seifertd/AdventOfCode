@@ -57,3 +57,6 @@ Notes, Blunders and Victories
   adding powers of 26 to get past the bad password and all I had
   to do was set the bad digit to the next one and set all remaining
   digits to 'a'.
+* Day 12: Easy as you care to make it. Part 1 is simple regex scan
+  for digits. Part 2: parse the JSON into an object, then write some
+  easy recursive code to count all the numbers.
