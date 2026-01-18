@@ -60,3 +60,14 @@ Notes, Blunders and Victories
 * Day 12: Easy as you care to make it. Part 1 is simple regex scan
   for digits. Part 2: parse the JSON into an object, then write some
   easy recursive code to count all the numbers.
+* Day 13: Identical to Day 9, as the problem can be treated as finding
+  the maximal path through a weighted graph, just with the addition
+  of closing the loop at the end. Removed the redundant looping
+  through each node as the starting node code as it does not matter
+  where you start, the dfs will find the optimal path. Part 2 was
+  just a bit of code to add a new node and set of edges to all the
+  other nodes with 0 weight. Was stymied for a while in Part 2,
+  because I thought we had to enter the change from part 1. Goofy
+  problem statement where the graph edge weights are "change in 
+  happiness" and we are not asked for the "total change in *change*
+  in happiness".
