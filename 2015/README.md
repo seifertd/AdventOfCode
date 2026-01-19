@@ -84,3 +84,15 @@ Notes, Blunders and Victories
   was about the same. Part 2 was just adding some code to keep
   track of the minimum number of containers and how many combos
   of containers had that many.
+* Day 18: As I read the instructions, I said to myself, "Is this
+  the Game of Life?" Yes, it is. Got Part 2 wrong on the first try
+  because I forgot to turn the four corners back on before taking
+  the final live cell count. Also was confused by the fact that
+  they ran an additional generation against the sample for Part 2.
+  Anyway, I provided a way to control the number of generations that
+  run by passing GENERATIONS=N to the ruby interpreter. Also
+  you can print the board after each generation by passing
+  SHOW_GRID=true:
+
+  > DEBUG=true GENERATIONS=5 SHOW_GRID=true ruby 18.rb part2 sample.txt
+
