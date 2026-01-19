@@ -80,3 +80,7 @@ Notes, Blunders and Victories
   combos based on an additional calculation.
 * Day 16: Part 1 pretty easy, part 2 likewise easy but you have
   to get the boolean logic right.
+* Day 17: Day 15 was practice for this problem, as the solution
+  was about the same. Part 2 was just adding some code to keep
+  track of the minimum number of containers and how many combos
+  of containers had that many.
