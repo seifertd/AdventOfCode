@@ -73,3 +73,8 @@ Notes, Blunders and Victories
   in happiness".
 * Day 14: Part 1 was probably over optimized, but both parts were
   easy to solve.
+* Day 15: Initially though I was going to need some kind of
+  math for this, but after thinking about combinations of integers
+  that add up to 100, I realized that brute force was going to be
+  ok. Part 2 just a extension of Part 1 to not count certain
+  combos based on an additional calculation.
