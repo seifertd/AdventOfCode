@@ -71,3 +71,5 @@ Notes, Blunders and Victories
   problem statement where the graph edge weights are "change in 
   happiness" and we are not asked for the "total change in *change*
   in happiness".
+* Day 14: Part 1 was probably over optimized, but both parts were
+  easy to solve.
