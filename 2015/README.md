@@ -78,3 +78,5 @@ Notes, Blunders and Victories
   that add up to 100, I realized that brute force was going to be
   ok. Part 2 just a extension of Part 1 to not count certain
   combos based on an additional calculation.
+* Day 16: Part 1 pretty easy, part 2 likewise easy but you have
+  to get the boolean logic right.
