@@ -96,3 +96,13 @@ Notes, Blunders and Victories
 
   > DEBUG=true GENERATIONS=5 SHOW_GRID=true ruby 18.rb part2 sample.txt
 
+* Day 19: Part 1 was a simple iteration of each of the rules,
+  applying them as many times as possible for all possible matches
+  of the source and tracking unique results. Part 2 was not
+  solvable without extensive cheating, though I did try a bfs,
+  which works on the sample, even for the extended sample trying
+  to produce "HOHOHO". Very unsatisfied with Part 2 which had
+  nothing to do with coding per se, but rather sussing out a
+  relationship in the answer, which to this day, I still don't 
+  understand fully. Formal grammars and such.
+
